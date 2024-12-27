@@ -23,7 +23,8 @@ SRC_FUN := \
 
 SRC_LIST := \
 	lstadd_back		lstadd_front	lstclear	lstdelone \
-	lstlast			lstcreate_node			lstlen 		lstindex	lstfind \
+	lstlast			lstcreate_node			lstlen \
+	lstindex_at		lstindex_get	lstfind \
 
 SRC_MEM := \
 	bzero	calloc	realloc	memchr	memcmp	memcpy	memmove	memset \
