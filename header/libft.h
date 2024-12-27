@@ -76,7 +76,6 @@ char	*ft_strtoupper(char *str);
 char	*ft_strtolower(char *str);
 char	*ft_strcapital(char *str);
 
-//needs work maybe?
 long	ft_atoi(const char *str);
 char	*ft_itoa(long nbr);
 char	*ft_atoabase(char *str, int src_b, int dst_b);
