@@ -1,25 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstclear.c                                      :+:      :+:    :+:   */
+/*   ft_bool.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdomange <romitdomange@gmail.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/02 17:19:09 by rdomange          #+#    #+#             */
-/*   Updated: 2024/06/02 17:20:44 by rdomange         ###   ########.fr       */
+/*   Created: 2024/12/27 09:57:18 by rdomange          #+#    #+#             */
+/*   Updated: 2025/01/03 06:02:47 by rdomange         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#ifndef FT_BOOL_H
+# define FT_BOOL_H
 
-void	ft_lstclear(t_list **lst, void (*del)(void *))
-{
-	t_list	*next;
+# define TRUE 1
+# define FALSE 0
 
-	while (*lst)
-	{
-		next = (*lst)->next;
-		ft_lstdelone(*lst, del);
-		*lst = next;
-	}
-}
+typedef int	t_bool;
+
+#endif	//ft_bool.h

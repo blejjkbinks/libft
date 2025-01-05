@@ -6,7 +6,7 @@ NAME := libft.a
 SRC_DIR := ./src/
 HDR_DIR := ./header/
 OBJ_DIR := ./obj/
-CFLAGS := -Wall -Wextra -Werror -I$(HDR_DIR)
+CFLAGS := -Wall -Wextra -Werror -O3 -I$(HDR_DIR)
 CC := cc $(CFLAGS)
 AR := ar rcs
 RM := rm -rf
@@ -32,15 +32,16 @@ SRC_MEM := \
 
 SRC_NBR := \
 	atoabase	atoi	itoa	itoa_ulong	nbrlen \
-	min	max	abs \
+	min		max		abs		numcmp \
 
 SRC_SPL := \
 	split	split_free	split_len	split_realloc	split_remove \
+	split_quotes \
 
 SRC_STR := \
 	strchr	strrchr	strjoin	strjoin_free	strnjoin \
 	strlcat	strlcpy	strlen strnlen \
-	strncmp	strnstr	strtrim	substr \
+	strncmp	strcmp	strnstr	strtrim	substr \
 
 SRC_WRT := \
 	putchar_fd	putendl_fd \

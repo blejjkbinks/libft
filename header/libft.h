@@ -13,23 +13,35 @@
 #ifndef LIBFT_H
 # define LIBFT_H
 
-# include <stdlib.h>		//ft_malloc and free
+# include <stdlib.h>		//malloc and free
 # include <unistd.h>		//write and read
 # include <fcntl.h>			//open and close
 # include <string.h>		//size_t
 # include <limits.h>		//INT_MAX
 # include <stdarg.h>		//va_arg
-//# include <stdbool.h>
 # include <errno.h>
-# include "color_fmt.h"
-# include "bool.h"
-# include "list.h"
-# include "btree.h"
+# include "ft_color_fmt.h"
+# include "ft_bool.h"
+# include "ft_list.h"
+# include "ft_btree.h"
 //# include <stdio.h>		//debug, remove when done
 
 # ifndef DEFAULT_CAP
 #  define DEFAULT_CAP 16
 # endif
+
+typedef struct s_norm
+{
+	char	**split;
+	char	*word;
+	char	c;
+	char	q;
+	int		i;
+	int		j;
+	int		k;
+	size_t	cap;
+	size_t	cap2;
+}	t_norm;
 
 void	*ft_memset(void *s, int c, size_t len);
 void	ft_bzero(void *s, size_t len);
@@ -48,6 +60,7 @@ size_t	ft_strlcat(char *dst, const char *src, size_t maxlen);
 char	*ft_strchr(const char *str, int c);
 char	*ft_strrchr(const char *str, int c);
 int		ft_strncmp(const char *s1, const char *s2, size_t len);
+int		ft_strcmp(const char *s1, const char *s2);
 char	*ft_strnstr(const char *str, const char *find, size_t len);
 char	*ft_substr(const char *str, unsigned int start, size_t len);
 char	*ft_strjoin(const char *s1, const char *s2);
@@ -60,7 +73,7 @@ char	**ft_split_free(char **split);
 char	**ft_split_realloc(char **split, size_t new, size_t *cap_ptr);
 size_t	ft_split_len(char **split);
 char	**ft_split_remove(char **split, int r);
-//char	**ft_split_quotes(char *str);
+char	**ft_split_quotes(char *str);
 
 int		ft_isspace(int c);
 int		ft_isalpha_lower(int c);
@@ -84,6 +97,7 @@ size_t	ft_nbrlen(long nbr);
 int		ft_min(int a, int b);
 int		ft_max(int a, int b);
 int		ft_abs(int x);
+int		ft_numcmp(int a, int b);
 
 size_t	ft_putchar_fd(char c, int fd);
 size_t	ft_putstr_fd(char *str, int fd);

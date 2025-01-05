@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   color_fmt.h                                        :+:      :+:    :+:   */
+/*   ft_color_fmt.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdomange <romitdomange@gmail.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/19 18:22:54 by rdomange          #+#    #+#             */
-/*   Updated: 2024/09/19 18:29:06 by rdomange         ###   ########.fr       */
+/*   Updated: 2025/01/03 06:03:50 by rdomange         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef COLOR_FMT_H
-# define COLOR_FMT_H
+#ifndef FT_COLOR_FMT_H
+# define FT_COLOR_FMT_H
 
 # ifndef CLR_RED
 #  define CLR_RED	"\033[31m"
@@ -41,4 +41,4 @@
 #  define CLR_RST	"\033[0m"
 # endif
 
-#endif	//color_fmt.h
+#endif	//ft_color_fmt.h

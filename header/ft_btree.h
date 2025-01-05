@@ -1,21 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   bool.h                                             :+:      :+:    :+:   */
+/*   ft_btree.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdomange <romitdomange@gmail.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/27 09:57:18 by rdomange          #+#    #+#             */
-/*   Updated: 2024/12/27 10:00:47 by rdomange         ###   ########.fr       */
+/*   Created: 2024/12/27 10:13:08 by rdomange          #+#    #+#             */
+/*   Updated: 2025/01/03 06:02:58 by rdomange         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef BOOL_H
-# define BOOL_H
+#ifndef FT_BTREE_H
+# define FT_BTREE_H
 
-# define TRUE 1
-# define FALSE 0
+typedef struct s_btree
+{
+	void			*data;
+	struct s_btree	*parent;
+	struct s_btree	*left;
+	struct s_btree	*right;
+}	t_btree;
 
-typedef int	t_bool;
+/*
+skiena
+search
+insert
+delete
+print
+successor/predecessor descendant
+find_min
 
-#endif
+piscine
+create_node
+apply in, suff, pre fix
+insert item
+search item
+level count
+apply by level
+*/
+
+#endif	//ft_btree.h
