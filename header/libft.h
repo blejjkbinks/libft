@@ -71,7 +71,7 @@ char	*ft_strtrim(const char *str, const char *set);
 char	**ft_split(const char *str, const char *c);
 char	**ft_split_free(char **split);
 char	**ft_split_realloc(char **split, size_t new, size_t *cap_ptr);
-size_t	ft_split_len(char **split);
+int		ft_split_len(char **split);
 char	**ft_split_remove(char **split, int r);
 char	**ft_split_quotes(char *str);
 
@@ -93,16 +93,19 @@ long	ft_atoi(const char *str);
 char	*ft_itoa(long nbr);
 char	*ft_atoabase(char *str, int src_b, int dst_b);
 char	*ft_itoa_ulong(unsigned long nbr);
-size_t	ft_nbrlen(long nbr);
+int		ft_nbrlen(long nbr);
 int		ft_min(int a, int b);
 int		ft_max(int a, int b);
 int		ft_abs(int x);
-int		ft_numcmp(int a, int b);
+int		ft_numcmp(int *a, int *b);
 
-size_t	ft_putchar_fd(char c, int fd);
-size_t	ft_putstr_fd(char *str, int fd);
-size_t	ft_putendl_fd(char *str, int fd);
-size_t	ft_putnbr_fd(long nbr, int fd);
+int		ft_putchar(char c);
+int		ft_putstr(char *str);
+int		ft_putnbr(long nbr);
+int		ft_putchar_fd(char c, int fd);
+int		ft_putstr_fd(char *str, int fd);
+int		ft_putendl_fd(char *str, int fd);
+int		ft_putnbr_fd(long nbr, int fd);
 char	*get_next_line(int fd);
 int		ft_printf(const char *fmt, ...);
 

@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_numcmp.c                                        :+:      :+:    :+:   */
+/*   ft_putstr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdomange <romitdomange@gmail.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/04 20:23:05 by rdomange          #+#    #+#             */
-/*   Updated: 2025/01/04 20:23:08 by rdomange         ###   ########.fr       */
+/*   Created: 2025/01/07 17:51:04 by rdomange          #+#    #+#             */
+/*   Updated: 2025/01/07 17:51:10 by rdomange         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int	ft_numcmp(int *a, int *b)
+int	ft_putstr(char *str)
 {
-	return (*a - *b);
+	return (ft_putstr_fd(str, 1));
 }

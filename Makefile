@@ -25,6 +25,8 @@ SRC_LIST := \
 	lstadd_back		lstadd_front	lstclear	lstdelone \
 	lstlast			lstcreate_node			lstlen \
 	lstindex_at		lstindex_get	lstfind \
+	lstsort		lstmerge	lstadd_sort		lstmerge_sort \
+	lstremove	lstreverse	lstprint \
 
 SRC_MEM := \
 	bzero	calloc	realloc	memchr	memcmp	memcpy	memmove	memset \
@@ -47,6 +49,7 @@ SRC_WRT := \
 	putchar_fd	putendl_fd \
 	putnbr_fd	putstr_fd \
 	get_next_line	printf	\
+	putchar	putstr	putnbr \
 
 tolower = $(shell echo '$1' | tr '[:upper:]' '[:lower:]')
 
@@ -77,6 +80,10 @@ fclean: clean
 	@echo "libft fcleaning"
 
 re: fclean all
+
+git:
+	find . -name '.DS_Store' -type f -delete
+	git status
 
 TEST := test.c
 
@@ -110,4 +117,4 @@ countfiles: all testclean
 	@tree $(OBJ_DIR) | grep files
 	@$(MAKE) fclean
 
-.PHONY: all clean fclean bonus test testclean countfiles
+.PHONY: all clean fclean bonus test testclean countfiles git

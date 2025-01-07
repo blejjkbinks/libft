@@ -12,9 +12,9 @@
 
 #include "libft.h"
 
-size_t	ft_putnbr_fd(long nbr, int fd)
+int	ft_putnbr_fd(long nbr, int fd)
 {
-	size_t	len;
+	int	len;
 
 	if (nbr == LONG_MIN)
 		return (ft_putstr_fd("-9223372036854775807", fd));

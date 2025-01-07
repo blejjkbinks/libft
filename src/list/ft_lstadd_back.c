@@ -16,7 +16,7 @@ void	ft_lstadd_back(t_list **lst, t_list *add)
 {
 	t_list	*last;
 
-	if (!add)
+	if (!lst || !add)
 		return ;
 	if (*lst)
 	{

@@ -12,9 +12,9 @@
 
 #include "libft.h"
 
-size_t	ft_putstr_fd(char *str, int fd)
+int	ft_putstr_fd(char *str, int fd)
 {
-	size_t	i;
+	int	i;
 
 	i = 0;
 	if (str)

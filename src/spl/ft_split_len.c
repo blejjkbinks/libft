@@ -12,7 +12,7 @@
 
 #include "libft.h"
 
-size_t	ft_split_len(char **split)
+int	ft_split_len(char **split)
 {
 	int	i;
 

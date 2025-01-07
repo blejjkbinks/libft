@@ -31,6 +31,12 @@ void	ft_lstadd_back(t_list **lst, t_list *add);
 void	ft_lstdelone(t_list *lst, void (*del)(void *));
 void	ft_lstclear(t_list **lst, void (*del)(void *));
 
-//rev, merge, sort, sorted_ins, sorted_merge, print, remove
+void	ft_lstsort(t_list **lst, int (*cmp)(void *, void *));
+void	ft_lstreverse(t_list **lst);
+t_list	*ft_lstmerge(t_list *lst1, t_list *lst2);
+t_list	*ft_lstmerge_sort(t_list *l1, t_list *l2, int (cmp)(void *, void *));
+void	ft_lstadd_sort(t_list **lst, t_list *add, int (*cmp)(void *, void *));
+void	ft_lstremove(t_list **lst, t_list *rem, void (*del)(void *));
+void	ft_lstprint(t_list *lst, char t);
 
 #endif	//ft_list.h

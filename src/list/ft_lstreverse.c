@@ -1,18 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_numcmp.c                                        :+:      :+:    :+:   */
+/*   ft_lstreverse.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdomange <romitdomange@gmail.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/04 20:23:05 by rdomange          #+#    #+#             */
-/*   Updated: 2025/01/04 20:23:08 by rdomange         ###   ########.fr       */
+/*   Created: 2025/01/07 16:03:44 by rdomange          #+#    #+#             */
+/*   Updated: 2025/01/07 16:03:45 by rdomange         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int	ft_numcmp(int *a, int *b)
+void	ft_lstreverse(t_list **lst)
 {
-	return (*a - *b);
+	t_list	*cur;
+	t_list	*tmp;
+
+	if (!lst || !*lst)
+		return ;
+	cur = *lst;
+	while (cur)
+	{
+		tmp = cur->next;
+		cur->next = cur->prev;
+		cur->prev = tmp;
+		if (!tmp)
+			*lst = cur;
+		cur = tmp;
+	}
 }

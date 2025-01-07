@@ -16,10 +16,18 @@
 typedef struct s_btree
 {
 	void			*data;
+	int				count;
+	char			color;
 	struct s_btree	*parent;
 	struct s_btree	*left;
 	struct s_btree	*right;
 }	t_btree;
+
+/*
+bst_insert
+rb_insert
+heapq
+*/
 
 /*
 skiena
