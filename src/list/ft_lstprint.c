@@ -16,11 +16,15 @@ void	ft_lstprint(t_list *lst, char t)
 {
 	while (lst)
 	{
-		if (t == 's')
-			ft_putstr(lst->data);
-		if (t == 'n')
-			ft_putnbr(*((long *)lst->data));
-		ft_putstr("\n");
+		if (lst->data)
+		{
+			ft_putstr("[");
+			if (t == 's')
+				ft_putstr(lst->data);
+			if (t == 'n')
+				ft_putnbr(*((long *)lst->data));
+			ft_putstr("],");
+		}
 		lst = lst->next;
 	}
 }
