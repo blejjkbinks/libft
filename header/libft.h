@@ -97,7 +97,7 @@ int		ft_nbrlen(long nbr);
 int		ft_min(int a, int b);
 int		ft_max(int a, int b);
 int		ft_abs(int x);
-int		ft_numcmp(int *a, int *b);
+int		ft_numcmp(int a, int b);
 
 int		ft_putchar(char c);
 int		ft_putstr(char *str);

@@ -12,7 +12,7 @@
 
 #include "libft.h"
 
-int	ft_numcmp(int *a, int *b)
+int	ft_numcmp(int a, int b)
 {
-	return (*a - *b);
+	return (a - b);
 }

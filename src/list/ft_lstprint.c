@@ -23,7 +23,9 @@ void	ft_lstprint(t_list *lst, char t)
 				ft_putstr(lst->data);
 			if (t == 'n')
 				ft_putnbr(*((long *)lst->data));
-			ft_putstr("],");
+			ft_putstr("]");
+			if (lst->next && lst->next->data)
+				ft_putstr(",");
 		}
 		lst = lst->next;
 	}
