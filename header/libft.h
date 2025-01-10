@@ -16,7 +16,7 @@
 # include <stdlib.h>		//malloc and free
 # include <unistd.h>		//write and read
 # include <fcntl.h>			//open and close
-# include <string.h>		//size_t
+# include <stddef.h>		//size_t
 # include <limits.h>		//INT_MAX
 # include <stdarg.h>		//va_arg
 # include <errno.h>
