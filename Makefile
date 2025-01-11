@@ -81,6 +81,15 @@ fclean: clean
 
 re: fclean all
 
+countfiles: all testclean
+	@printf "norminette KOs: "
+	@norminette | grep "Error!" | wc -l
+	@printf "src: "
+	@tree $(SRC_DIR) | grep files
+	@printf "obj: "
+	@tree $(OBJ_DIR) | grep files
+	@$(MAKE) fclean
+
 git:
 	find . -name '.DS_Store' -type f -delete
 	git status
@@ -107,14 +116,5 @@ test: all $(TEST)
 	@echo "letsgo :)\nvvvvv"
 	@./a.out
 	@echo "\n^^^^^\ndone :)"
-
-countfiles: all testclean
-	@printf "norminette KOs: "
-	@norminette | grep "Error!" | wc -l
-	@printf "src: "
-	@tree $(SRC_DIR) | grep files
-	@printf "obj: "
-	@tree $(OBJ_DIR) | grep files
-	@$(MAKE) fclean
 
 .PHONY: all clean fclean bonus test testclean countfiles git
