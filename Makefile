@@ -83,7 +83,7 @@ re: fclean all
 
 countfiles: all testclean
 	@printf "norminette KOs: "
-	@norminette | grep "Error!" | wc -l
+	@norminette | grep Error! | wc -l
 	@printf "src: "
 	@tree $(SRC_DIR) | grep files
 	@printf "obj: "
@@ -106,7 +106,7 @@ $(TEST):
 	@echo '#include "libft.h"' > $@
 	@echo '#include <stdio.h>' >> $@
 	@echo '' >> $@
-	@echo 'int main()' >> $@
+	@echo 'int	main(void)' >> $@
 	@echo '{' >> $@
 	@echo '	ft_printf(".  %-15.13s.\\n", "new test file;");' >> $@
 	@echo '}' >> $@
