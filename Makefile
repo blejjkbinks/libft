@@ -8,6 +8,7 @@ HDR_DIR := ./header/
 OBJ_DIR := ./obj/
 CFLAGS := -Wall -Wextra -Werror -O3 -I$(HDR_DIR)
 CC := cc $(CFLAGS)
+CC_NOFLG := cc
 AR := ar rcs
 RM := rm -rf
 MKD := mkdir -p
