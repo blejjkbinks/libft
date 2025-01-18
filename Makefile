@@ -1,6 +1,7 @@
 NAME := libft.a
 
 #for parent Makefile, needs work
+#$(MAKE) -C libft
 #$(CC) -Llibft -lft -ledit $(OBJ) -o $(NAME)
 
 SRC_DIR := ./src/
