@@ -12,9 +12,9 @@
 
 #include "libft.h"
 
-static int	quoted(char c, char *q)
+static int	quoted(char c, int *q)
 {
-	char	prev;
+	int	prev;
 
 	prev = *q;
 	if (c == '\'' || c == '\"')
@@ -27,55 +27,45 @@ static int	quoted(char c, char *q)
 	return (prev != *q);
 }
 
-static char	**ft_split_quotes_word(char *str, t_norm *s)
+static char	**ft_split_quotes_word(char *str, char **ret, char d, int i[6])
 {
-	s->j = 0;
-	while (str && str[s->i] && (str[s->i] != ' ' || s->q))
+	i[1] = 0;
+	while (str[i[0]] && (str[i[0]] != d || i[3]))
 	{
-		if (!quoted(str[s->i], &s->q))
-			s->split[s->k][s->j++] = str[s->i];
-		s->i++;
-		s->split[s->k][s->j] = 0;
-		if (s->j + 1 == (int)s->cap)
-			s->split[s->k] = ft_realloc
-				(s->split[s->k], s->j, s->cap * 2, &s->cap);
-		if (!s->split[s->k])
-			return (ft_split_free(s->split));
+		quoted(str[i[0]], &i[3]);
+		ret[i[2]][i[1]++] = str[i[0]++];
+		ret[i[2]][i[1]] = 0;
+		if (i[1] + 1 == i[4])
+			ret[i[2]] = ft_realloc(ret[i[2]], i[1], i[4] * 2, (size_t *)&i[4]);
 	}
-	s->split[++s->k] = NULL;
-	return (s->split);
+	ret[++i[2]] = NULL;
+	if (i[2] + 1 == i[5])
+		ret = ft_split_realloc(ret, i[5] * 2, (size_t *)&i[5]);
+	return (ret);
 }
 
-static char	**ft_split_quotes_norm(char *str, t_norm *s)
+char	**ft_split_quotes(char *str, char d)
 {
-	while (str && str[s->i])
+	char	**ret;
+	int		i[6];
+
+	ft_bzero(i, sizeof(i));
+	i[5] = DEFAULT_CAP;
+	ret = (char **)ft_malloc(i[5] * sizeof(char *));
+	if (!ret)
+		return (NULL);
+	while (str && str[i[0]])
 	{
-		while (str[s->i] == ' ')
-			s->i++;
-		s->cap = DEFAULT_CAP;
-		if (str[s->i])
-			s->split[s->k] = (char *)ft_malloc(s->cap * sizeof(char));
-		if (!s->split[s->k])
-			return (ft_split_free(s->split));
-		ft_split_quotes_word(str, s);
-		if (s->k + 1 == (int)s->cap2 && s->split)
-			s->split = ft_split_realloc(s->split, s->cap2 * 2, &s->cap2);
-		if (!s->split)
+		while (str[i[0]] == ' ' || str[i[0]] == d)
+			i[0]++;
+		i[4] = DEFAULT_CAP;
+		if (str[i[0]])
+			ret[i[2]] = (char *)ft_malloc(i[4] * sizeof(char));
+		if (!ret[i[2]])
+			return (ft_split_free(ret));
+		ret = ft_split_quotes_word(str, ret, d, i);
+		if (!ret)
 			return (NULL);
 	}
-	return (s->split);
-}
-
-char	**ft_split_quotes(char *str)
-{
-	t_norm	s;
-
-	s.i = 0;
-	s.k = 0;
-	s.cap2 = DEFAULT_CAP;
-	s.q = 0;
-	s.split = (char **)ft_malloc(s.cap2 * sizeof(char *));
-	if (!s.split)
-		return (NULL);
-	return (ft_split_quotes_norm(str, &s));
+	return (ret);
 }

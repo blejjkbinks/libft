@@ -37,6 +37,7 @@ SRC_CHR := \
 
 SRC_FUN := \
 	printmemory		bit		free	malloc	sort \
+	test_libft \
 
 SRC_LIST := \
 	lstadd_back		lstadd_front	lstclear	lstdelone \
@@ -107,7 +108,7 @@ countfiles: all testclean
 	@tree $(OBJ_DIR) | grep files
 	@$(MAKE) fclean
 
-gitstat:
+gitstat: countfiles
 	find . -name '.DS_Store' -type f -delete
 	git status
 
@@ -131,6 +132,7 @@ $(TEST):
 	@echo 'int	main(void)' >> $@
 	@echo '{' >> $@
 	@echo '	ft_printf(".  %-15.13s.\\n", "new test file;");' >> $@
+	@echo '	ft_test_libft();' >> $@
 	@echo '}' >> $@
 
 test: all $(TEST)

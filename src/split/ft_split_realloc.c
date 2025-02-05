@@ -17,6 +17,8 @@ char	**ft_split_realloc(char **split, size_t new, size_t *cap_ptr)
 	char	**ret;
 	int		i;
 
+	if (!split)
+		return (NULL);
 	ret = (char **)ft_malloc(new * sizeof(char *));
 	i = 0;
 	while (split[i])

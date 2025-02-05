@@ -77,7 +77,7 @@ char	**ft_split_free(char **split);
 char	**ft_split_realloc(char **split, size_t new, size_t *cap_ptr);
 int		ft_split_len(char **split);
 char	**ft_split_remove(char **split, int r);
-char	**ft_split_quotes(char *str);
+char	**ft_split_quotes(char *str, char d);
 
 //chr
 int		ft_isspace(int c);
@@ -118,6 +118,7 @@ char	*get_next_line(int fd);
 int		ft_printf(const char *fmt, ...);
 
 //fun
+void	ft_test_libft(void);
 void	*ft_free(void *ptr);
 void	*ft_malloc(size_t size);
 void	*ft_printmemory(void *ptr, size_t len);

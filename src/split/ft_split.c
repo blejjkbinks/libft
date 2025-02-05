@@ -18,5 +18,5 @@ char	**ft_split(const char *str, char d)
 
 	set[0] = d;
 	set[1] = 0;
-	ret = return (ft_split_set(str, set));
+	return (ft_split_set(str, set));
 }
