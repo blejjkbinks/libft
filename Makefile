@@ -109,6 +109,11 @@ git:
 	find . -name '.DS_Store' -type f -delete
 	git status
 
+gitpush:
+	git add .
+	git commit -m "libft makefile did that"
+	git push
+
 TEST := test.c
 
 testclean:
@@ -132,4 +137,4 @@ test: all $(TEST)
 	@./a.out
 	@echo "\n^^^^^\ndone :)"
 
-.PHONY: all clean fclean bonus test testclean countfiles git
+.PHONY: all clean fclean bonus test testclean countfiles git gitpush
