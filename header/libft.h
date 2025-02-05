@@ -43,6 +43,7 @@ typedef struct s_norm
 	size_t	cap2;
 }	t_norm;
 
+//mem
 void	*ft_memset(void *s, int c, size_t len);
 void	ft_bzero(void *s, size_t len);
 void	*ft_memcpy(void *dst, const void *src, size_t len);
@@ -53,6 +54,7 @@ void	*ft_calloc(size_t count, size_t size);
 void	*ft_realloc(void *ptr, size_t old, size_t new, size_t *cap);
 char	*ft_strdup(const char *str);
 
+//str
 size_t	ft_strlen(const char *str);
 size_t	ft_strnlen(const char *str, size_t maxlen);
 size_t	ft_strlcpy(char *dst, const char *src, size_t maxlen);
@@ -68,6 +70,7 @@ char	*ft_strjoin_free(char *s1, char *s2, int fr);
 char	*ft_strnjoin(int count, ...);
 char	*ft_strtrim(const char *str, const char *set);
 
+//split
 char	**ft_split(const char *str, const char *c);
 char	**ft_split_free(char **split);
 char	**ft_split_realloc(char **split, size_t new, size_t *cap_ptr);
@@ -75,6 +78,7 @@ int		ft_split_len(char **split);
 char	**ft_split_remove(char **split, int r);
 char	**ft_split_quotes(char *str);
 
+//chr
 int		ft_isspace(int c);
 int		ft_isalpha_lower(int c);
 int		ft_isalpha_upper(int c);
@@ -85,10 +89,12 @@ int		ft_isascii(int c);
 int		ft_isprint(int c);
 int		ft_toupper(int c);
 int		ft_tolower(int c);
+int		ft_strisdigit(char *str);
 char	*ft_strtoupper(char *str);
 char	*ft_strtolower(char *str);
 char	*ft_strcapital(char *str);
 
+//nbr
 long	ft_atoi(const char *str);
 char	*ft_itoa(long nbr);
 char	*ft_atoabase(char *str, int src_b, int dst_b);
@@ -99,6 +105,7 @@ int		ft_max(int a, int b);
 int		ft_abs(int x);
 int		ft_numcmp(int a, int b);
 
+//wrt
 int		ft_putchar(char c);
 int		ft_putstr(char *str);
 int		ft_putnbr(long nbr);
@@ -109,6 +116,7 @@ int		ft_putnbr_fd(long nbr, int fd);
 char	*get_next_line(int fd);
 int		ft_printf(const char *fmt, ...);
 
+//fun
 void	*ft_free(void *ptr);
 void	*ft_malloc(size_t size);
 void	*ft_printmemory(void *ptr, size_t len);

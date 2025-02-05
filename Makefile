@@ -12,9 +12,9 @@
 
 NAME := libft.a
 
-#for parent Makefile, needs work
+#for parent Makefile
 #$(MAKE) -C libft
-#$(CC) -Llibft -lft -ledit $(OBJ) -o $(NAME)
+#$(CC) $(OBJ) -Llibft -lft -o $(NAME)
 
 SRC_DIR := ./src/
 HDR_DIR := ./header/
@@ -25,12 +25,13 @@ CC_NOFLG := cc
 AR := ar rcs
 RM := rm -rf
 MKD := mkdir -p
-CATS := CHR FUN LIST MEM NBR SPL STR WRT
+CATS := CHR FUN LIST MEM NBR SPLIT STR WRT
 
 SRC_CHR := \
 	isalnum		isalpha		isalpha_lower		isalpha_upper \
 	isascii		isdigit		isprint		isspace \
 	strcapital	strtolower	strtoupper	tolower	toupper \
+	strisdigit \
 
 SRC_FUN := \
 	printmemory		bit		free	malloc	sort \
@@ -50,7 +51,7 @@ SRC_NBR := \
 	atoabase	atoi	itoa	itoa_ulong	nbrlen \
 	min		max		abs		numcmp \
 
-SRC_SPL := \
+SRC_SPLIT := \
 	split	split_free	split_len	split_realloc	split_remove \
 	split_quotes \
 
