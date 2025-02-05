@@ -64,6 +64,7 @@ SRC_STR := \
 	strchr	strrchr	strjoin	strjoin_free	strnjoin \
 	strlcat	strlcpy	strlen strnlen \
 	strncmp	strcmp	strnstr	strtrim	substr \
+	strtrim_quotes \
 
 SRC_WRT := \
 	putchar_fd	putendl_fd \

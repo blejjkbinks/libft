@@ -12,24 +12,28 @@
 
 #include "libft.h"
 
-static void	ft_test_show_split(char **split, char *line, char *d, int step)
+static void	ft_test_show_split(char **split, char *d, int step)
 {
 	int	i;
 
 	if (step == 0)
-		ft_printf("split_set with d='%s', line='%s'\n", d, line);
+		ft_printf("split_set with d='%s'\n", d);
 	if (step == 1)
-		ft_printf("split_quotes with d='%c', line='%s'\n", d[0], line);
+		ft_printf("split_quotes with d='%c'\n", d[0]);
+	if (step == 2)
+		ft_printf("trimming quotes\n");
 	i = 0 * ft_printf("->");
 	while (split[i])
 	{
+		if (step == 2)
+			ft_strtrim_quotes(split[i]);
 		ft_printf("%s", split[i]);
 		if (split[i + 1])
 			ft_printf(":");
 		i++;
 	}
 	ft_printf(";");
-	if (step != 1)
+	if (step != 2)
 		ft_printf("\n");
 	ft_split_free(split);
 }
@@ -52,8 +56,9 @@ static void	ft_test_split(char *line)
 		}
 		if (!ft_strcmp(line, "done"))
 			break ;
-		ft_test_show_split(ft_split_set(line, d), line, d, 0);
-		ft_test_show_split(ft_split_quotes(line, d[0]), line, d, 1);
+		ft_test_show_split(ft_split_set(line, d), d, 0);
+		ft_test_show_split(ft_split_quotes(line, d[0]), d, 1);
+		ft_test_show_split(ft_split_quotes(line, d[0]), d, 2);
 		ft_free(line);
 		line = get_next_line(0 + (0 * ft_printf("\n> ")));
 	}
