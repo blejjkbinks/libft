@@ -29,8 +29,6 @@ CATS := CHR FUN LIST MEM NBR SPLIT STR WRT
 
 MAKEFLAGS += --no-print-directory
 
-DATE := $(shell date +"%d/%m %H:%M")
-
 SRC_CHR := \
 	isalnum		isalpha		isalpha_lower		isalpha_upper \
 	isascii		isdigit		isprint		isspace \
@@ -117,7 +115,7 @@ gitstat: countfiles
 
 gitpush:
 	git add .
-	git commit -m "pushed from libft makefile on $(DATE)"
+	git commit -m "pushed from libft makefile on $(shell date +"%d/%m %H:%M")"
 	git push
 
 TEST := test.c
