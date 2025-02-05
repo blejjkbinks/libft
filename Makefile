@@ -27,6 +27,8 @@ RM := rm -rf
 MKD := mkdir -p
 CATS := CHR FUN LIST MEM NBR SPLIT STR WRT
 
+MAKEFLAGS += --no-print-directory
+
 DATE := $(shell date +"%d/%m %H:%M")
 
 SRC_CHR := \

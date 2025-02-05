@@ -18,6 +18,6 @@ void	*ft_malloc(size_t size)
 
 	ret = malloc(size);
 	if (!ret)
-		write(1, "ft_malloc failed\n", 17);
+		(void)!write(1, "ft_malloc failed\n", 17);
 	return (ret);
 }
