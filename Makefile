@@ -27,6 +27,8 @@ RM := rm -rf
 MKD := mkdir -p
 CATS := CHR FUN LIST MEM NBR SPLIT STR WRT
 
+DATE := $(shell date +"%d-%m")
+
 SRC_CHR := \
 	isalnum		isalpha		isalpha_lower		isalpha_upper \
 	isascii		isdigit		isprint		isspace \
@@ -105,13 +107,13 @@ countfiles: all testclean
 	@tree $(OBJ_DIR) | grep files
 	@$(MAKE) fclean
 
-git:
+gitstat:
 	find . -name '.DS_Store' -type f -delete
 	git status
 
 gitpush:
 	git add .
-	git commit -m "libft makefile did that"
+	git commit -m "pushed from libft makefile on $(DATE)"
 	git push
 
 TEST := test.c
@@ -137,4 +139,4 @@ test: all $(TEST)
 	@./a.out
 	@echo "\n^^^^^\ndone :)"
 
-.PHONY: all clean fclean bonus test testclean countfiles git gitpush
+.PHONY: all clean fclean bonus test testclean countfiles gitstat gitpush
