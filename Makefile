@@ -27,7 +27,7 @@ RM := rm -rf
 MKD := mkdir -p
 CATS := CHR FUN LIST MEM NBR SPLIT STR WRT
 
-DATE := $(shell date +"%d-%m")
+DATE := $(shell date +"%d/%m %H:%M")
 
 SRC_CHR := \
 	isalnum		isalpha		isalpha_lower		isalpha_upper \
