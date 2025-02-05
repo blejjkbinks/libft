@@ -71,7 +71,8 @@ char	*ft_strnjoin(int count, ...);
 char	*ft_strtrim(const char *str, const char *set);
 
 //split
-char	**ft_split(const char *str, const char *c);
+char	**ft_split(const char *str, char d);
+char	**ft_split_set(const char *str, const char *d);
 char	**ft_split_free(char **split);
 char	**ft_split_realloc(char **split, size_t new, size_t *cap_ptr);
 int		ft_split_len(char **split);

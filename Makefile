@@ -52,7 +52,7 @@ SRC_NBR := \
 	min		max		abs		numcmp \
 
 SRC_SPLIT := \
-	split	split_free	split_len	split_realloc	split_remove \
+	split	split_set	split_free	split_len	split_realloc	split_remove \
 	split_quotes \
 
 SRC_STR := \
