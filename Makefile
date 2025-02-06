@@ -109,7 +109,7 @@ countfiles: all testclean
 	@tree $(OBJ_DIR) | grep files
 	@$(MAKE) fclean
 
-gitstat: countfiles
+gitstat:
 	find . -name '.DS_Store' -type f -delete
 	git status
 
