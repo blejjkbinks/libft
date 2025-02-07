@@ -19,9 +19,11 @@ char	*ft_strnjoin(int count, ...)
 	char	*tmp;
 	char	*arg;
 
-	ret = "";
+	if (count <= 0)
+		return (NULL);
+	ret = ft_strdup("");
 	va_start(ap, count);
-	while (--count)
+	while (count--)
 	{
 		arg = va_arg(ap, char *);
 		if (arg)
