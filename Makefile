@@ -135,7 +135,7 @@ $(TEST):
 	@echo '' >> $@
 	@echo 'int	main(void)' >> $@
 	@echo '{' >> $@
-	@echo '	ft_printf(".  %-15.13s.\n", "new test file;");' >> $@
+	@echo '	ft_printf(".  %-15.13s.\\n", "new test file");' >> $@
 	@echo '	ft_test_libft();' >> $@
 	@echo '}' >> $@
 
@@ -143,6 +143,6 @@ test: all $(TEST)
 	$(CC) $(TEST) $(NAME)
 	@echo "letsgo :)\nvvvvv"
 	@./a.out
-	@printf "\n^^^^^\n done :)"
+	@printf "\n^^^^^\n done :)\n"
 
 .PHONY: all clean fclean bonus test testclean countfiles gitstat gitpush
