@@ -113,11 +113,6 @@ gitstat: fclean
 	find . -name '.DS_Store' -type f -delete
 	git status
 
-gitfetch: fclean	#this doesnt work haha
-	git fetch
-	git status -uno
-	git diff
-
 m := pushed from libft makefile on $(shell date +"%d/%m %H:%M")
 GIT_PUSH_MESSAGE := $(m)
 
