@@ -109,8 +109,11 @@ countfiles: all testclean
 	@tree $(OBJ_DIR) | grep files
 	@$(MAKE) fclean
 
-gitstat:
+gitstat: fclean
 	find . -name '.DS_Store' -type f -delete
+	git status
+
+gitfetch: fclean
 	git fetch
 	git status -uno
 	git diff
@@ -118,7 +121,7 @@ gitstat:
 m := pushed from libft makefile on $(shell date +"%d/%m %H:%M")
 GIT_PUSH_MESSAGE := $(m)
 
-gitpush:
+gitpush: fclean
 	git add .
 	git commit -m "$(GIT_PUSH_MESSAGE)"
 	git push
