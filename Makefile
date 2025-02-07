@@ -113,7 +113,7 @@ gitstat:
 	find . -name '.DS_Store' -type f -delete
 	git status
 
-m := "pushed from libft makefile on $(shell date +"%d/%m %H:%M")"
+m := pushed from libft makefile on $(shell date +"%d/%m %H:%M")
 
 gitpush:
 	git add .
