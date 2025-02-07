@@ -28,7 +28,7 @@ MKD := mkdir -p
 CATS := CHR FUN LIST MEM NBR SPLIT STR WRT
 
 MAKEFLAGS += --no-print-directory
-#asd
+
 SRC_CHR := \
 	isalnum		isalpha		isalpha_lower		isalpha_upper \
 	isascii		isdigit		isprint		isspace \
