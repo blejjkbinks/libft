@@ -6,7 +6,7 @@
 /*   By: rdomange <romitdomange@gmail.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/12 19:29:39 by rdomange          #+#    #+#             */
-/*   Updated: 2024/12/27 09:48:22 by rdomange         ###   ########.fr       */
+/*   Updated: 2025/02/07 16:19:36 by rdomange         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,19 +29,6 @@
 # ifndef DEFAULT_CAP
 #  define DEFAULT_CAP 16
 # endif
-
-typedef struct s_norm
-{
-	char	**split;
-	char	*word;
-	char	c;
-	char	q;
-	int		i;
-	int		j;
-	int		k;
-	size_t	cap;
-	size_t	cap2;
-}	t_norm;
 
 //mem
 void	*ft_memset(void *s, int c, size_t len);
