@@ -6,7 +6,7 @@
 #    By: rdomange <romitdomange@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/24 14:35:21 by rdomange          #+#    #+#              #
-#    Updated: 2025/01/24 14:35:25 by rdomange         ###   ########.fr        #
+#    Updated: 2025/02/07 15:19:34 by rdomange         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -113,7 +113,7 @@ gitstat: fclean
 	find . -name '.DS_Store' -type f -delete
 	git status
 
-gitfetch: fclean
+gitfetch: fclean	#this doesnt work haha
 	git fetch
 	git status -uno
 	git diff
