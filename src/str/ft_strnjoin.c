@@ -29,8 +29,8 @@ char	*ft_strnjoin(int count, ...)
 		if (arg)
 		{
 			tmp = ft_strjoin(ret, arg);
+			ft_free(ret);
 			ret = tmp;
-			ft_free(tmp);
 		}
 	}
 	va_end(ap);
