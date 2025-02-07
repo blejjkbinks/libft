@@ -123,9 +123,6 @@ gitpush:
 	git commit -m "$(GIT_PUSH_MESSAGE)"
 	git push
 
-gitpull:
-	git pull --rebase
-
 TEST := test.c
 
 testclean:
