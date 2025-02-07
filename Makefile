@@ -56,7 +56,7 @@ SRC_NBR := \
 
 SRC_SPLIT := \
 	split	split_set	split_free	split_len	split_realloc	split_remove \
-	split_quotes \
+	split_quotes	isquoted \
 
 SRC_STR := \
 	strchr	strrchr	strjoin	strjoin_free	strnjoin \
