@@ -111,14 +111,20 @@ countfiles: all testclean
 
 gitstat:
 	find . -name '.DS_Store' -type f -delete
-	git status
+	git fetch
+	git status -uno
+	git diff
 
 m := pushed from libft makefile on $(shell date +"%d/%m %H:%M")
+GIT_PUSH_MESSAGE := $(m)
 
 gitpush:
 	git add .
-	git commit -m "$(m)"
+	git commit -m "$(GIT_PUSH_MESSAGE)"
 	git push
+
+gitpull:
+	git pull --rebase
 
 TEST := test.c
 
