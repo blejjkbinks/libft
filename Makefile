@@ -116,7 +116,7 @@ gitstat: fclean
 m := pushed from libft makefile on $(shell date +"%d/%m %H:%M")
 GIT_PUSH_MESSAGE := $(m)
 
-gitpush: fclean
+gitpush: gitstat
 	git add .
 	git commit -m "$(GIT_PUSH_MESSAGE)"
 	git push
