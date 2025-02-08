@@ -34,7 +34,7 @@ int	ft_printf(const char *fmt, ...)
 			if (!str)
 				break ;
 			len += ft_putstr_fd(str, 1);
-			if (flg['c'] && !ft_strcmp(str, "@^"))
+			if (flg['c'] && !ft_strcmp(str, "^@", flg[1] < 2))
 				len--;
 			ft_free (str);
 		}
