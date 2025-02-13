@@ -13,7 +13,7 @@
 #include "libft.h"
 
 static void	ft_test_split(char *line, char **pipe, char **comm, char *s);
-static void	ft_test_showsplit(char **split, char *d);
+static void	ft_test_showsplit(char **split, char *d, char n, int i);
 
 void	ft_test_libft(void)
 {
@@ -39,17 +39,17 @@ static void	ft_test_split(char *line, char **pipe, char **comm, char *s)
 	line = get_next_line(0 * ft_printf("\ntesting %s :)\n$%s> ", s, s));
 	while (ft_strcmp(line, "done"))
 	{
-		ft_printf("'%s'\n", line);
+		ft_printf("splitting '%s'\n", line);
 		ft_printf("unclosed quote?->%d.\n", ft_isquoted_closed(line));
 		pipe = ft_split_quotes(line, '|');
-		ft_test_showsplit(pipe, "[]");
+		ft_test_showsplit(pipe, "[]", -1, 0);
 		i = 0;
 		while (pipe && pipe[i])
 		{
 			comm = ft_split_quotes(pipe[i], ' ');
-			ft_test_showsplit(comm, "{}");
+			ft_test_showsplit(comm, "{}", i, 0);
 			ft_splittrim_quotes(comm);
-			ft_test_showsplit(comm, "()");
+			ft_test_showsplit(comm, "()", i, 0);
 			ft_split_free(comm);
 			i++;
 		}
@@ -59,17 +59,23 @@ static void	ft_test_split(char *line, char **pipe, char **comm, char *s)
 	ft_printf("done testing %s", s, ft_free(line));
 }
 
-static void	ft_test_showsplit(char **split, char *d)
+static void	ft_test_showsplit(char **split, char *d, char n, int i)
 {
-	int	i;
-
-	i = 0;
+	if (!split && n >= 0)
+		ft_printf("null from %c", n + 'a');
+	if (split && n >= 0)
+		ft_printf("%c", n + 'a');
 	while (split && split[i])
 	{
-		ft_printf("%d%c%s%c", i, d[0], split[i], d[1]);
+		if (!ft_strcmp(d, "[]"))
+			n = i + 'a';
+		else
+			n = i + '0';
+		ft_printf("%c%c%s%c", n, d[0], split[i], d[1]);
 		i++;
 	}
-	ft_printf("\n");
+	if (split)
+		ft_printf("\n");
 }
 
 /*
