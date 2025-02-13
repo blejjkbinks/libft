@@ -25,7 +25,7 @@ CC_NOFLG := cc
 AR := ar rcs
 RM := rm -rf
 MKD := mkdir -p
-CATS := CHR FUN LIST MEM NBR SPLIT QUOTES STR WRT
+CATS := CHR FUN LIST MEM NBR SPLIT STR WRT
 
 #when changing: CATS, SRC_CATS, libft.h, filename, stdheader
 
@@ -57,9 +57,7 @@ SRC_NBR := \
 	min		max		abs		numcmp \
 
 SRC_SPLIT := \
-	split	split_set	split_free	split_len	split_realloc	split_remove \
-
-SRC_QUOTES := \
+	split	split_set	split_free	split_len \
 	isquoted	split_quotes	splittrim_quotes	strtrim_quotes \
 
 SRC_STR := \
