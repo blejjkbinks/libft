@@ -146,6 +146,6 @@ test: all $(TEST_C)
 	$(CC) $(TEST_C) $(NAME) -o $(TEST_A)
 	@echo "letsgo :)\nvvvvv"
 	@./$(TEST_A)
-	@printf "\n^^^^^\n done :)\n"
+	@printf "###\n^^^^^\n done :)\n"
 
 .PHONY: all clean fclean bonus test testclean countfiles gitstat gitpush
