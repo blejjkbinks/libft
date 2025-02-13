@@ -59,6 +59,7 @@ SRC_NBR := \
 SRC_SPLIT := \
 	split	split_set	split_free	split_len \
 	isquoted	split_quotes	splittrim_quotes	strtrim_quotes \
+	isquoted_closed \
 
 SRC_STR := \
 	strchr	strrchr	strjoin	strjoin_free	strnjoin \

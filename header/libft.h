@@ -15,7 +15,6 @@
 
 # include <stdlib.h>		//malloc and free
 # include <unistd.h>		//write and read
-# include <fcntl.h>			//open and close
 # include <stddef.h>		//size_t
 # include <limits.h>		//INT_MAX
 # include <stdarg.h>		//va_arg
@@ -66,6 +65,7 @@ int		ft_isquoted(char c, int *q);
 char	**ft_split_quotes(const char *str, char d);
 void	ft_splittrim_quotes(char **split);
 int		ft_strtrim_quotes(char *str);
+int		ft_isquoted_closed(const char *str);
 
 //chr
 int		ft_isspace(int c);

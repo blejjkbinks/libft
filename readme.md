@@ -11,6 +11,7 @@
 - `ft_putnbr_base`
 
 ## review
+- main function at the top, statics in order
 - `split_quotes` is all wrong
 - `ft_printf`, try without so many strdup
 - remove `ft_strjoin_free` if printf doesnt need it anymore
