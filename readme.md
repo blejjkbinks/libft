@@ -1,5 +1,8 @@
 # LIBFT
 
+## todo asap
+- `split_quotes` is all wrong
+
 ## remove
 
 ## add
@@ -7,7 +10,7 @@
 - `ft_putnbr_base`
 
 ## review
-- `split_quotes` is all wrong
+- `get_next_line` can have its own `realloc`
 - `ft_printf`, try without so many strdup
 - `ft_strnjoin` so many strdup
 - remove `ft_strjoin_free` if printf doesnt need it anymore
