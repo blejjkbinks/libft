@@ -64,7 +64,7 @@ int		ft_split_len(char **split);
 int		ft_isquoted(char c, int *q);
 char	**ft_split_quotes(const char *str, char d);
 void	ft_splittrim_quotes(char **split);
-int		ft_strtrim_quotes(char *str);
+void	ft_strtrim_quotes(char *str);
 int		ft_isquoted_closed(const char *str);
 
 //chr
@@ -92,6 +92,7 @@ int		ft_nbrlen(long nbr);
 int		ft_min(int a, int b);
 int		ft_max(int a, int b);
 int		ft_abs(int x);
+int		ft_mod_range(int val, int range);
 int		ft_numcmp(int a, int b);
 
 //wrt
@@ -112,5 +113,6 @@ void	*ft_malloc(size_t size);
 void	*ft_printmemory(void *ptr, size_t len);
 int		ft_bit(void *ptr, int i, int val);
 void	ft_sort(int *arr, int n);
+int		ft_random(void);
 
 #endif	//libft.h

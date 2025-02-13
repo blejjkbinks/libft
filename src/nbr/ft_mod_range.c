@@ -1,36 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strtrim_quotes.c                                :+:      :+:    :+:   */
+/*   ft_mod_range.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdomange <romitdomange@gmail.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/05 23:09:33 by rdomange          #+#    #+#             */
-/*   Updated: 2025/02/05 23:09:44 by rdomange         ###   ########.fr       */
+/*   Created: 2025/02/13 15:20:21 by rdomange          #+#    #+#             */
+/*   Updated: 2025/02/13 15:21:16 by rdomange         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	ft_strtrim_quotes(char *str)
+int	ft_mod_range(int val, int range)
 {
-	int	i;
-	int	j;
-	int	q;
-
-	if (!str)
-		return ;
-	i = 0;
-	j = 0;
-	q = 0;
-	while (str && str[i])
-	{
-		if (!ft_isquoted(str[i], &q))
-		{
-			str[j] = str[i];
-			j++;
-		}
-		i++;
-	}
-	str[j] = 0;
+	if (range < 0)
+		return (0);
+	range++;
+	return (((val % range) + range) % range);
 }

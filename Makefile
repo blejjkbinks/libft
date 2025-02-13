@@ -39,7 +39,7 @@ SRC_CHR := \
 
 SRC_FUN := \
 	printmemory		bit		free	malloc	sort \
-	test_libft \
+	random		test_libft \
 
 SRC_LIST := \
 	lstadd_back		lstadd_front	lstclear	lstdelone \
@@ -54,7 +54,7 @@ SRC_MEM := \
 
 SRC_NBR := \
 	atoabase	atoi	itoa	itoa_ulong	nbrlen \
-	min		max		abs		numcmp \
+	min		max		abs		mod_range	numcmp \
 
 SRC_SPLIT := \
 	split	split_set	split_free	split_len \
@@ -123,28 +123,29 @@ gitpush: gitstat
 	git commit -m "$(GIT_PUSH_MESSAGE)"
 	git push
 
-TEST := test.c
+TEST_A := test
+TEST_C := test.c
 
 testclean:
-	@$(RM) $(TEST)
-	@$(RM) a.out
-	@$(RM) a.out.dSYM
+	@$(RM) $(TEST_C)
+	@$(RM) $(TEST_A)
+	@$(RM) $(TEST_A).dSYM
 
-$(TEST):
+$(TEST_C):
 	@touch $@
 	@echo '#include "libft.h"' > $@
 	@echo '#include <stdio.h>' >> $@
 	@echo '' >> $@
 	@echo 'int	main(void)' >> $@
 	@echo '{' >> $@
-	@echo '	ft_printf(".  %-15.13s.\\n", "new test file");' >> $@
-	@echo '	ft_test_libft();' >> $@
+	@echo '	ft_printf(".%-15.13s.\\n", "new test file");' >> $@
+	@echo '	//ft_test_libft();' >> $@
 	@echo '}' >> $@
 
-test: all $(TEST)
-	$(CC) $(TEST) $(NAME)
+test: all $(TEST_C)
+	$(CC) $(TEST_C) $(NAME) -o $(TEST_A)
 	@echo "letsgo :)\nvvvvv"
-	@./a.out
+	@./$(TEST_A)
 	@printf "\n^^^^^\n done :)\n"
 
 .PHONY: all clean fclean bonus test testclean countfiles gitstat gitpush
