@@ -56,7 +56,6 @@ char	*ft_strjoin(const char *s1, const char *s2);
 char	*ft_strjoin_free(char *s1, char *s2, int fr);
 char	*ft_strnjoin(int count, ...);
 char	*ft_strtrim(const char *str, const char *set);
-int		ft_strtrim_quotes(char *str);
 
 //split
 char	**ft_split(const char *str, char d);
@@ -65,9 +64,12 @@ char	**ft_split_free(char **split);
 char	**ft_split_realloc(char **split, size_t new_cap, size_t *cap_ptr);
 int		ft_split_len(char **split);
 char	**ft_split_remove(char **split, int r);
+
+//quotes
 int		ft_isquoted(char c, int *q);
 char	**ft_split_quotes(const char *str, char d);
-void	ft_split_trim_quotes(char **split);
+void	ft_splittrim_quotes(char **split);
+int		ft_strtrim_quotes(char *str);
 
 //chr
 int		ft_isspace(int c);

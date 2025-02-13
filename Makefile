@@ -25,7 +25,9 @@ CC_NOFLG := cc
 AR := ar rcs
 RM := rm -rf
 MKD := mkdir -p
-CATS := CHR FUN LIST MEM NBR SPLIT STR WRT
+CATS := CHR FUN LIST MEM NBR SPLIT QUOTES STR WRT
+
+#when changing: CATS, SRC_CATS, libft.h, filename, stdheader
 
 MAKEFLAGS += --no-print-directory
 
@@ -56,13 +58,14 @@ SRC_NBR := \
 
 SRC_SPLIT := \
 	split	split_set	split_free	split_len	split_realloc	split_remove \
-	split_quotes	isquoted	split_trim_quotes \
+
+SRC_QUOTES := \
+	isquoted	split_quotes	splittrim_quotes	strtrim_quotes \
 
 SRC_STR := \
 	strchr	strrchr	strjoin	strjoin_free	strnjoin \
 	strlcat	strlcpy	strlen strnlen \
 	strncmp	strcmp	strnstr	strtrim	substr \
-	strtrim_quotes \
 
 SRC_WRT := \
 	putchar_fd	putendl_fd \
