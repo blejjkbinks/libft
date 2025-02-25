@@ -12,6 +12,8 @@
 
 #include "libft.h"
 
+static char	*ft_realloc_gnl(char *src, size_t *c);
+
 char	*get_next_line(int fd)
 {
 	char	*ret;
@@ -30,9 +32,29 @@ char	*get_next_line(int fd)
 		}
 		ret[++i] = 0;
 		if (i + 1 == c)
-			ret = ft_realloc(ret, i, c * 2, &c);
+			ret = ft_realloc_gnl(ret, &c);
 	}
 	if (!i)
 		return (ft_free(ret));
 	return (ret);
+}
+
+static char	*ft_realloc_gnl(char *src, size_t *c)
+{
+	char	*dst;
+	int		i;
+
+	if (!src)
+		return (NULL);
+	*c *= 2;
+	dst = (char *)ft_malloc(*c * sizeof(char));
+	i = 0;
+	while (src[i])
+	{
+		dst[i] = src[i];
+		i++;
+	}
+	dst[i] = 0;
+	free(src);
+	return (dst);
 }
