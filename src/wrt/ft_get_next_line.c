@@ -20,7 +20,7 @@ char	*get_next_line(int fd)
 	size_t	i;
 	size_t	c;
 
-	c = DEFAULT_CAP;
+	c = 16;
 	i = 0;
 	ret = (char *)ft_malloc(c * sizeof(char));
 	while (ret && read(fd, &ret[i], 1) == 1)

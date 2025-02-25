@@ -25,10 +25,6 @@
 # include "ft_btree.h"
 //# include <stdio.h>		//debug, remove when done
 
-# ifndef DEFAULT_CAP
-#  define DEFAULT_CAP 16
-# endif
-
 //mem
 void	*ft_memset(void *s, int c, size_t len);
 void	ft_bzero(void *s, size_t len);
