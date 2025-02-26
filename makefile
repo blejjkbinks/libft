@@ -19,7 +19,7 @@ NAME := libft.a
 SRC_DIR := ./src/
 HDR_DIR := ./header/
 OBJ_DIR := ./obj/
-CFLAGS := -Wall -Wextra -Werror -g -I$(HDR_DIR)
+CFLAGS := -Wall -Wextra -Werror -I$(HDR_DIR)
 CC := cc $(CFLAGS)
 CC_NOFLG := cc
 AR := ar rcs
@@ -157,7 +157,7 @@ $(TEST_C):
 	@echo '}' >> $@
 
 test: all $(TEST_C)
-	$(CC) $(TEST_C) $(NAME) -o $(TEST_A)
+	$(CC) -g $(TEST_C) $(NAME) -o $(TEST_A)
 	@echo "letsgo :)\nvvvvv"
 	@./$(TEST_A)
 	@printf "###\n^^^^^\ndone :)\n"
