@@ -102,6 +102,8 @@ fclean: clean
 
 re: fclean all
 
+## funny rules  ##
+
 countfiles: all testclean
 	@printf "norminette KOs: "
 	@norminette | grep Error! | wc -l
@@ -122,6 +124,17 @@ gitpush: gitstat
 	git add .
 	git commit -m "$(GIT_PUSH_MESSAGE)"
 	git push
+
+SOURCE_TXT := libft_source.txt
+source_txt:
+	@> $(SOURCE_TXT)
+	@for file in $(shell echo src/*/*.c); do \
+		tail -n +14 $$file >> $(SOURCE_TXT); \
+	done
+	@mv $(SOURCE_TXT) ~/Desktop/$(SOURCE_TXT)
+	@echo ok its on your desktop
+
+## test rules  ##
 
 TEST_A := test
 TEST_C := test.c
