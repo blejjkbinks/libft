@@ -129,6 +129,7 @@ SOURCE_TXT := libft_source.txt
 source_txt:
 	@> $(SOURCE_TXT)
 	@for file in $(shell echo src/*/*.c); do \
+		echo $$file >> $(SOURCE_TXT); \
 		tail -n +14 $$file >> $(SOURCE_TXT); \
 	done
 	@mv $(SOURCE_TXT) ~/Desktop/$(SOURCE_TXT)
