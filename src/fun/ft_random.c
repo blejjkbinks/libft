@@ -22,7 +22,7 @@ int	ft_random(void)
 	{
 		seed ^= (unsigned int)(size_t)(&seed);
 		i = 0;
-		while (i < 10)
+		while ((unsigned long)i < sizeof(noise) / sizeof(noise[0]))
 		{
 			noise[i] = (int *)ft_malloc(1 * sizeof(int));
 			seed ^= (unsigned int)(size_t)(noise[i]);

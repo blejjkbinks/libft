@@ -92,9 +92,6 @@ int		ft_mod_range(int val, int range);
 int		ft_numcmp(int a, int b);
 
 //wrt
-int		ft_putchar(char c);
-int		ft_putstr(char *str);
-int		ft_putnbr(long nbr);
 int		ft_putchar_fd(char c, int fd);
 int		ft_putstr_fd(char *str, int fd);
 int		ft_putendl_fd(char *str, int fd);

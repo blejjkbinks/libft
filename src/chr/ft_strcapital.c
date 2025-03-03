@@ -14,7 +14,6 @@
 
 char	*ft_strcapital(char *str)
 {
-	char	last;
 	int		i;
 
 	if (!str)
@@ -23,9 +22,8 @@ char	*ft_strcapital(char *str)
 	str[i] = ft_toupper(str[i]);
 	while (str[i + 1])
 	{
-		last = str[i];
 		i++;
-		if (!ft_isalnum(last))
+		if (!ft_isalnum(str[i - 1]))
 			str[i] = ft_toupper(str[i]);
 		else
 			str[i] = ft_tolower(str[i]);

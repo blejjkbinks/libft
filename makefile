@@ -70,7 +70,6 @@ SRC_WRT := \
 	putchar_fd	putendl_fd \
 	putnbr_fd	putstr_fd \
 	get_next_line	printf \
-	putchar	putstr	putnbr \
 
 tolower = $(shell echo '$1' | tr '[:upper:]' '[:lower:]')
 

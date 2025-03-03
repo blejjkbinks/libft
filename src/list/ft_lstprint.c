@@ -18,14 +18,14 @@ void	ft_lstprint(t_list *lst, char t)
 	{
 		if (lst->data)
 		{
-			ft_putstr("[");
+			ft_printf("[");
 			if (t == 's')
-				ft_putstr(lst->data);
+				ft_printf("%s", lst->data);
 			if (t == 'n')
-				ft_putnbr(*((long *)lst->data));
-			ft_putstr("]");
+				ft_printf("%ld", *((long *)lst->data));
+			ft_printf("]");
 			if (lst->next && lst->next->data)
-				ft_putstr(",");
+				ft_printf(",");
 		}
 		lst = lst->next;
 	}

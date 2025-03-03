@@ -25,12 +25,9 @@ char	*get_next_line(int fd)
 	ret = (char *)ft_malloc(c * sizeof(char));
 	while (ret && read(fd, &ret[i], 1) == 1)
 	{
-		if (ret[i] == '\n')
-		{
-			ret[i] = 0;
-			return (ret);
-		}
 		ret[++i] = 0;
+		if (ret[i - 1] == '\n')
+			return (ret);
 		if (i + 1 == c)
 			ret = ft_realloc_gnl(ret, &c);
 	}
