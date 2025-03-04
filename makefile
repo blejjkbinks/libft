@@ -17,7 +17,7 @@ NAME := libft.a
 #$(CC) $(OBJ) -Llibft -lft -o $(NAME)
 
 SRC_DIR := ./src/
-HDR_DIR := ./header/
+HDR_DIR := ./inc/
 OBJ_DIR := ./obj/
 CFLAGS := -Wall -Wextra -Werror -I$(HDR_DIR)
 CC := cc $(CFLAGS)

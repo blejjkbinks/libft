@@ -15,7 +15,6 @@
 
 # include <stdlib.h>		//malloc and free
 # include <unistd.h>		//write and read
-# include <stddef.h>		//size_t
 # include <limits.h>		//INT_MAX
 # include <stdarg.h>		//va_arg
 # include <errno.h>
@@ -23,7 +22,6 @@
 # include "ft_bool.h"
 # include "ft_list.h"
 # include "ft_btree.h"
-//# include <stdio.h>		//debug, remove when done
 
 //mem
 void	*ft_memset(void *s, int c, size_t len);
@@ -43,13 +41,13 @@ size_t	ft_strlcpy(char *dst, const char *src, size_t maxlen);
 size_t	ft_strlcat(char *dst, const char *src, size_t maxlen);
 char	*ft_strchr(const char *str, int c);
 char	*ft_strrchr(const char *str, int c);
-int		ft_strncmp(const char *s1, const char *s2, size_t len);
 int		ft_strcmp(const char *s1, const char *s2);
+int		ft_strncmp(const char *s1, const char *s2, size_t len);
 char	*ft_strnstr(const char *str, const char *find, size_t len);
 char	*ft_substr(const char *str, unsigned int start, size_t len);
 char	*ft_strjoin(const char *s1, const char *s2);
-char	*ft_strjoin_free(char *s1, char *s2, int fr);
-char	*ft_strnjoin(int count, ...);
+char	*ft_strjoin_free(char *s1, char *s2, int fr);	//only in ft_printf
+char	*ft_strnjoin(int count, ...);					//less malloc, usefull?
 char	*ft_strtrim(const char *str, const char *set);
 
 //split
@@ -81,6 +79,7 @@ char	*ft_strcapital(char *str);
 
 //nbr
 long	ft_atoi(const char *str);
+//atof
 char	*ft_itoa(long nbr);
 char	*ft_atoabase(char *str, int src_b, int dst_b);
 char	*ft_itoa_ulong(unsigned long nbr);
@@ -96,8 +95,8 @@ int		ft_putchar_fd(char c, int fd);
 int		ft_putstr_fd(char *str, int fd);
 int		ft_putendl_fd(char *str, int fd);
 int		ft_putnbr_fd(long nbr, int fd);
-char	*get_next_line(int fd);
 int		ft_printf(const char *fmt, ...);
+char	*get_next_line(int fd);
 
 //fun
 void	ft_test_libft(void);
