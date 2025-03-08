@@ -58,7 +58,6 @@ int	ft_printf(const char *fmt, ...)
 		}
 		else if (*fmt)
 			len += 1 + 0 * write(1, fmt++, 1);
-		//len += ft_putchar_fd(*(fmt++), 1);
 	}
 	va_end(ap);
 	return ((len * (*fmt == 0)) + (-1 * (*fmt != 0)));
@@ -104,8 +103,6 @@ static int	*ft_printf_flag(va_list *a, const char **fmt, int *flg)
 	return (flg);
 }
 
-//1 line remaining
-
 //what types are valid with # | ' ' | +
 
 //(ulong)long cast, test properly
@@ -141,11 +138,6 @@ static char	*ft_printf_elem(va_list *a, const char **fmt, int *flg, char *e)
 		ft_strtoupper(e);
 	return (ft_printf_trns(e, flg, (size_t)flg[1], (size_t)flg[2]));
 }
-//0 lines remaining
-
-//check value-1 for precision??
-
-//
 
 static char	*ft_printf_trns(char *e, int *flg, size_t w, size_t p)
 {
@@ -155,35 +147,19 @@ static char	*ft_printf_trns(char *e, int *flg, size_t w, size_t p)
 		e = ft_strjoin("0", e) + (long)ft_free(e);
 	if (flg['p'] || (flg['#'] && ft_strchr("xX", flg[4])))
 		e = ft_strjoin("0x", e) + (long)ft_free(e);
-	if (flg[6])
-		e = ft_strjoin((char [2]){flg[6], 0}, e) + (long)ft_free(e);
+	e = ft_strjoin((char [2]){flg[6], 0}, e) + (long)ft_free(e);
 	while (w > ft_strlen(e) && !flg['-'] && !flg['c'])
 		e = ft_strjoin(" ", e) + (long)ft_free(e);
 	while (w > ft_strlen(e) && flg['-'] && !flg['c'])
 		e = ft_strjoin(e, " ") + (long)ft_free(e);
 	if (w > 1 && flg['c'])
-		e = ft_memset(ft_memset(ft_calloc(w + 1, 1), ' ', w) + \
-		w * !flg['-'] , *e, 1) - w * flg['-'] + (long)ft_free(e);
+	{
+		p = (size_t)ft_memset(ft_calloc(w + 1, 1), ' ', w);
+		((char *)p)[!flg['-'] * (w - 1)] = *e;
+		free(e);
+		e = (char *)p;
+	}
 	flg[7] = w + (!w * flg['c']) + (!w * ft_strlen(e) * !flg['c']);
-	printf("{flg[7]==%d}", flg[7]);
+	//printf("{flg[7]==%d}", flg[7]);
 	return (e);
 }
-
-//12 lines remaining
-
-// static char	*ft_printf_extend(char *e, int *flg, size_t w, size_t p)
-// {
-// 	(void)w;
-// 	if (p && ft_strchr("fF", *flg) && ft_strlen(ft_strchr(e, '.')) > p)
-// 		e[(ft_strchr(e, '.') - e) + flg[2] + 1] = 0;
-// 	while ((ft_strlen(e) + (flg[' '] || flg['+'])) < (size_t)flg[1])
-// 	{
-// 		if (flg['-'])
-// 			e = ft_strjoin_free(e, " ", 1);
-// 		else if (flg['0'] && ft_strchr("diouxX", *flg))
-// 			e = ft_strjoin_free("0", e, 2);
-// 		else
-// 			e = ft_strjoin_free(" ", e, 2);
-// 	}
-// 	return (e);
-// }
