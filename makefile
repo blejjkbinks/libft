@@ -139,7 +139,7 @@ source_txt:
 
 TEST_A := a.test
 TEST_C := test.c
-TEST_T := test.txt
+TEST_T := .test.txt
 
 testclean:
 	@$(RM) $(TEST_C)

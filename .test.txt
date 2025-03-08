@@ -4,5 +4,6 @@
 int	main(void)
 {
 	ft_printf(".%-15.13s.\n", "new test file");
+	ft_printf("|%2c||%-2c|\n", 0, 0);
 	//ft_test_libft();
 }

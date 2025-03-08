@@ -33,9 +33,7 @@ void	ft_printf_debug(char *str, int *flg)
 
 static int	*ft_printf_flag(va_list *a, const char **fmt, int *flg);
 static char	*ft_printf_elem(va_list *a, const char **fmt, int *flg, char *e);
-//static char	*ft_printf_trans(char *e, int *flg, int base);
 static char	*ft_printf_trns(char *e, int *flg, size_t w, size_t p);
-//static char	*ft_printf_extend(char *e, int *flg, size_t w, size_t p);
 
 int	ft_printf(const char *fmt, ...)
 {
@@ -51,7 +49,6 @@ int	ft_printf(const char *fmt, ...)
 		if (*fmt == '%' && *(fmt + 1) && *(++fmt) != '%')
 		{
 			str = ft_printf_elem(&ap, &fmt, flg, NULL);
-			//ft_printf_debug(str, flg);
 			if (!str)
 				break ;
 			len += flg[7] + 0 * write(1, str, flg[7]) + (long)ft_free(str);
@@ -62,8 +59,6 @@ int	ft_printf(const char *fmt, ...)
 	va_end(ap);
 	return ((len * (*fmt == 0)) + (-1 * (*fmt != 0)));
 }
-
-//putstr is wrong because of %c=0, need write for len
 
 //flg[0] ->
 //flg["%-+ '#"]
@@ -153,13 +148,14 @@ static char	*ft_printf_trns(char *e, int *flg, size_t w, size_t p)
 	while (w > ft_strlen(e) && flg['-'] && !flg['c'])
 		e = ft_strjoin(e, " ") + (long)ft_free(e);
 	if (w > 1 && flg['c'])
+		e = ft_memset(ft_memset(ft_calloc(w + 1, 1), ' ', w) + (!flg['-'] * (w - 1)), *e, 1) - (!flg['-'] * (w - 1)) + (long)ft_free(e);
+	/*if (w > 1 && flg['c'])
 	{
 		p = (size_t)ft_memset(ft_calloc(w + 1, 1), ' ', w);
 		((char *)p)[!flg['-'] * (w - 1)] = *e;
 		free(e);
 		e = (char *)p;
-	}
-	flg[7] = w + (!w * flg['c']) + (!w * ft_strlen(e) * !flg['c']);
-	//printf("{flg[7]==%d}", flg[7]);
+	}*/
+	flg[7] = w + (!w * flg['c']) + (!w * !flg['c'] * ft_strlen(e));
 	return (e);
 }
