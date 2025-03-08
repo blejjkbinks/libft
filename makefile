@@ -16,6 +16,8 @@ NAME := libft.a
 #$(MAKE) -C libft
 #$(CC) $(OBJ) -Llibft -lft -o $(NAME)
 
+#when changing: CATS, SRC_CATS, libft.h, filename, stdheader
+
 SRC_DIR := ./src/
 HDR_DIR := ./inc/
 OBJ_DIR := ./obj/
@@ -27,13 +29,11 @@ RM := rm -rf
 MKD := mkdir -p
 CATS := CHR FUN LIST MEM NBR SPLIT STR WRT
 
-#when changing: CATS, SRC_CATS, libft.h, filename, stdheader
-
 MAKEFLAGS += --no-print-directory
 
 SRC_CHR := \
 	isalnum		isalpha		isalpha_lower		isalpha_upper \
-	isascii		isdigit		isprint		isspace \
+	isascii		isdigit		isprint		isspace		ishexdg \
 	strcapital	strtolower	strtoupper	tolower	toupper \
 	strisdigit \
 
@@ -53,8 +53,9 @@ SRC_MEM := \
 	strdup \
 
 SRC_NBR := \
-	atoabase	atoi	itoa	itoa_ulong	nbrlen \
-	min		max		abs		mod_range	numcmp \
+	atoi	atoi_base	itoa	itoa_ulong	itoa_base	atoa_base \
+	abs		hexoffset	max		min		mod_range	nbrlen_base \
+	numcmp \
 
 SRC_SPLIT := \
 	split	split_set	split_free	split_len \
@@ -83,14 +84,14 @@ all: $(NAME)
 
 $(OBJ_DIR):
 	@$(MKD) $(foreach c, $(CATS), $@/$(call tolower,$(c)))
-	@echo "libft compiling objects"
 
 $(OBJ): $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	@$(CC) -c $< -o $@
+	@printf "%s " $(basename $(notdir $<) | sed 's/^ft_//')
 
 $(NAME): $(OBJ_DIR) $(OBJ)
 	@$(AR) $(NAME) $(OBJ)
-	@echo "libft compiling archive"
+	@echo $(NAME)
 
 clean: testclean
 	@$(RM) $(OBJ_DIR)
@@ -127,7 +128,7 @@ gitpush: gitstat
 SOURCE_TXT := libft_source.txt
 source_txt:
 	@> $(SOURCE_TXT)
-	@for file in $(shell echo src/*/*.c); do \
+	@for file in $(SRC); do \
 		echo $$file >> $(SOURCE_TXT); \
 		tail -n +14 $$file >> $(SOURCE_TXT); \
 	done
@@ -136,8 +137,9 @@ source_txt:
 
 ## test rules  ##
 
-TEST_A := test
+TEST_A := a.test
 TEST_C := test.c
+TEST_T := test.txt
 
 testclean:
 	@$(RM) $(TEST_C)
@@ -145,20 +147,12 @@ testclean:
 	@$(RM) $(TEST_A).dSYM
 
 $(TEST_C):
-	@touch $@
-	@echo '#include "libft.h"' > $@
-	@echo '#include <stdio.h>' >> $@
-	@echo '' >> $@
-	@echo 'int	main(void)' >> $@
-	@echo '{' >> $@
-	@echo '	ft_printf(".%-15.13s.\\n", "new test file");' >> $@
-	@echo '	//ft_test_libft();' >> $@
-	@echo '}' >> $@
+	cp $(TEST_T) $(TEST_C)
 
 test: all $(TEST_C)
 	$(CC) -g $(TEST_C) $(NAME) -o $(TEST_A)
 	@echo "letsgo :)\nvvvvv"
-	@./$(TEST_A)
+	@./$(TEST_A) | cat -e
 	@printf "###\n^^^^^\ndone :)\n"
 
 .PHONY: all clean fclean bonus test testclean countfiles gitstat gitpush source_txt

@@ -1,63 +1,58 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_itoa.c                                          :+:      :+:    :+:   */
+/*   ft_itoa_base.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdomange <romitdomange@gmail.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/13 23:01:06 by rdomange          #+#    #+#             */
-/*   Updated: 2024/04/16 11:22:51 by rdomange         ###   ########.fr       */
+/*   Created: 2025/03/05 14:33:19 by rdomange          #+#    #+#             */
+/*   Updated: 2025/03/05 14:33:21 by rdomange         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static int	ft_itoa_len(int n);
+static int	ft_itoa_base_len(unsigned long nbr, int base);
 
-char	*ft_itoa(long nbr)
+char	*ft_itoa_base(unsigned long nbr, int base)
 {
 	char	*ret;
 	int		len;
 
+	if (base < 2 || base > 16)
+		return (NULL);
 	if (nbr == 0)
 		return (ft_strdup("0"));
-	if (nbr == LONG_MIN)
-		return (ft_strdup("-9223372036854775808"));
-	len = ft_itoa_len(nbr);
-	ret = (char *)ft_malloc((len + 1) * sizeof(char));
+	len = ft_itoa_base_len(nbr, base);
+	ret = (char *)ft_malloc((len + 2) * sizeof(char));
 	if (!ret)
 		return (NULL);
 	ret[len] = 0;
-	if (nbr < 0)
-	{
-		ret[0] = '-';
-		nbr *= -1;
-	}
 	while (nbr)
 	{
 		len--;
-		ret[len] = nbr % 10 + '0';
-		nbr /= 10;
+		if (nbr % base < 10)
+			ret[len] = nbr % base + '0';
+		else
+			ret[len] = nbr % base - 10 + 'a';
+		nbr /= base;
 	}
 	return (ret);
 }
 
-static int	ft_itoa_len(int nbr)
+static int	ft_itoa_base_len(unsigned long nbr, int base)
 {
-	int	i;
+	int	l;
 
+	if (base < 2)
+		return (0);
 	if (nbr == 0)
 		return (1);
-	i = 0;
-	if (nbr < 0)
-	{
-		nbr *= -1;
-		i++;
-	}
+	l = 0;
 	while (nbr)
 	{
-		nbr /= 10;
-		i++;
+		nbr /= base;
+		l++;
 	}
-	return (i);
+	return (l);
 }

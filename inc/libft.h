@@ -67,23 +67,31 @@ int		ft_isalpha_lower(int c);
 int		ft_isalpha_upper(int c);
 int		ft_isalpha(int c);
 int		ft_isdigit(int c);
+int		ft_ishexdg(int c);
 int		ft_isalnum(int c);
 int		ft_isascii(int c);
 int		ft_isprint(int c);
 int		ft_toupper(int c);
 int		ft_tolower(int c);
-int		ft_strisdigit(char *str);
-char	*ft_strtoupper(char *str);
-char	*ft_strtolower(char *str);
-char	*ft_strcapital(char *str);
+int		ft_strisdigit(const char *str);
+void	ft_strtoupper(char *str);
+void	ft_strtolower(char *str);
+void	ft_strcapital(char *str);
 
 //nbr
 long	ft_atoi(const char *str);
-//atof
+size_t	ft_atoi_base(const char *str, int base);
 char	*ft_itoa(long nbr);
-char	*ft_atoabase(char *str, int src_b, int dst_b);
 char	*ft_itoa_ulong(unsigned long nbr);
-int		ft_nbrlen(long nbr);
+char	*ft_itoa_base(unsigned long nbr, int base);
+char	*ft_atoa_base(const char *str, int src_b, int dst_b);
+int		ft_nbrlen_base(long nbr, int base);
+int		ft_hexoffset(int c);
+//atof
+//logn
+//pow
+//sqrt
+//isprime
 int		ft_min(int a, int b);
 int		ft_max(int a, int b);
 int		ft_abs(int x);
@@ -97,6 +105,7 @@ int		ft_putendl_fd(char *str, int fd);
 int		ft_putnbr_fd(long nbr, int fd);
 int		ft_printf(const char *fmt, ...);
 char	*get_next_line(int fd);
+//readline
 
 //fun
 void	ft_test_libft(void);

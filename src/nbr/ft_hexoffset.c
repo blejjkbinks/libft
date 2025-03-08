@@ -1,31 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strisdigit.c                                    :+:      :+:    :+:   */
+/*   ft_hexoffset.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdomange <romitdomange@gmail.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/05 16:51:31 by rdomange          #+#    #+#             */
-/*   Updated: 2025/02/05 16:53:00 by rdomange         ###   ########.fr       */
+/*   Created: 2025/03/04 20:08:45 by rdomange          #+#    #+#             */
+/*   Updated: 2025/03/04 20:27:13 by rdomange         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int	ft_strisdigit(const char *str)
+int	ft_hexoffset(int c)
 {
-	int	i;
-
-	if (!str || !str[0])
-		return (0);
-	i = 0;
-	if (str[0] == '-')
-		i++;
-	while (str[i])
-	{
-		if (!ft_isdigit(str[i]))
-			return (0);
-		i++;
-	}
-	return (1);
+	if (ft_isdigit(c))
+		return ('0');
+	if ('a' <= c && c <= 'f')
+		return ('a' + 10);
+	if ('A' <= c && c <= 'F')
+		return ('A' + 10);
+	return (0);
 }

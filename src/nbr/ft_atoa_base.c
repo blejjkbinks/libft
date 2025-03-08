@@ -1,31 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strisdigit.c                                    :+:      :+:    :+:   */
+/*   ft_atoa_base.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdomange <romitdomange@gmail.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/05 16:51:31 by rdomange          #+#    #+#             */
-/*   Updated: 2025/02/05 16:53:00 by rdomange         ###   ########.fr       */
+/*   Created: 2024/03/30 20:00:49 by rdomange          #+#    #+#             */
+/*   Updated: 2025/03/05 16:28:40 by rdomange         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int	ft_strisdigit(const char *str)
+char	*ft_atoa_base(const char *str, int src_b, int dst_b)
 {
-	int	i;
+	char	*ret;
+	int		neg;
 
-	if (!str || !str[0])
-		return (0);
-	i = 0;
-	if (str[0] == '-')
-		i++;
-	while (str[i])
+	while (ft_isspace(*str))
+		str++;
+	neg = 0;
+	if (*str == '-')
+		neg = 1;
+	ret = ft_itoa_base(ft_atoi_base(str, src_b), dst_b);
+	if (neg && ret && ft_strcmp(ret, "0"))
 	{
-		if (!ft_isdigit(str[i]))
-			return (0);
-		i++;
+		ft_memmove(ret + 1, ret, ft_strlen(ret));
+		ret[0] = '-';
 	}
-	return (1);
+	return (ret);
 }

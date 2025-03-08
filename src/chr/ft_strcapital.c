@@ -12,15 +12,14 @@
 
 #include "libft.h"
 
-char	*ft_strcapital(char *str)
+void	ft_strcapital(char *str)
 {
 	int		i;
 
-	if (!str)
-		return (NULL);
 	i = 0;
-	str[i] = ft_toupper(str[i]);
-	while (str[i + 1])
+	if (str)
+		str[i] = ft_toupper(str[i]);
+	while (str && str[i + 1])
 	{
 		i++;
 		if (!ft_isalnum(str[i - 1]))
@@ -28,5 +27,4 @@ char	*ft_strcapital(char *str)
 		else
 			str[i] = ft_tolower(str[i]);
 	}
-	return (str);
 }

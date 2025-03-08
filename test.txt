@@ -1,0 +1,8 @@
+#include "libft.h"
+#include <stdio.h>
+
+int	main(void)
+{
+	ft_printf(".%-15.13s.\n", "new test file");
+	//ft_test_libft();
+}

@@ -12,10 +12,30 @@
 
 #include "libft.h"
 
-static char	*ft_printf_elem(va_list *a, const char **fmt, char *e, int *flg);
-static int	*ft_printf_getflg(va_list *a, const char **fmt, int *flg);
-static char	*ft_printf_extend(char *e, int *flg, size_t p);
-static char	*ft_printf_trans(char *e, char *f, int *flg, int base);
+#include <stdio.h>
+
+void	ft_printf_debug(char *str, int *flg)
+{
+	printf("{");
+	printf("[%d:|%c|]", 4, flg[4]);
+	for (int i = 0; i < 128; i++)
+	{
+		if (i <= 6)
+		{
+			if (flg[i])
+				printf("[%d:|%d|]", i, flg[i]);
+		}
+		if (ft_isprint(flg[i]))
+			printf("[%d:'%c']", i, flg[i]);
+	}
+	printf("->|%s|}\n", str);
+}
+
+static int	*ft_printf_flag(va_list *a, const char **fmt, int *flg);
+static char	*ft_printf_elem(va_list *a, const char **fmt, int *flg, char *e);
+//static char	*ft_printf_trans(char *e, int *flg, int base);
+static char	*ft_printf_trns(char *e, int *flg, size_t w, size_t p);
+//static char	*ft_printf_extend(char *e, int *flg, size_t w, size_t p);
 
 int	ft_printf(const char *fmt, ...)
 {
@@ -28,108 +48,142 @@ int	ft_printf(const char *fmt, ...)
 	len = 0;
 	while (fmt && *fmt)
 	{
-		if (*fmt == '%' && *(fmt + 1) && *(++fmt))
+		if (*fmt == '%' && *(fmt + 1) && *(++fmt) != '%')
 		{
-			str = ft_printf_elem(&ap, &fmt, NULL, flg);
+			str = ft_printf_elem(&ap, &fmt, flg, NULL);
+			//ft_printf_debug(str, flg);
 			if (!str)
 				break ;
-			len += ft_putstr_fd(str, 1);
-			if (flg['c'] && !ft_strcmp(str, "^@") && flg[1] < 2)
-				len--;
-			ft_free (str);
+			len += flg[7] + 0 * write(1, str, flg[7]) + (long)ft_free(str);
 		}
-		else if (*(fmt++))
-			len += ft_putchar_fd(*(fmt - 1), 1);
+		else if (*fmt)
+			len += ft_putchar_fd(*(fmt++), 1);
+			len += 1 + 0 * write(1, fmt++, 1);
 	}
 	va_end(ap);
 	return ((len * (*fmt == 0)) + (-1 * (*fmt != 0)));
 }
 
-static char	*ft_printf_elem(va_list *a, const char **fmt, char *e, int *flg)
-{
-	flg = ft_printf_getflg(a, fmt, flg);
-	if (!flg)
-		return (NULL);
-	if (flg['l'] && ft_strchr("uxXob", *flg))
-		e = ft_itoa_ulong((unsigned long)va_arg(*a, long));
-	if (flg['l'] && ft_strchr("di", *flg))
-		e = ft_itoa(va_arg(*a, long));
-	if ((!flg['l']) && ft_strchr("diuxXob", *flg))
-		e = ft_itoa(va_arg(*a, int));
-	if (ft_strchr("fF", *flg))
-		e = ft_strdup(":)f to a F:)");
-	if (ft_strchr("gG", *flg))
-		e = ft_strdup(":)f to a G:)");
-	if (*flg == 'p')
-		e = ft_itoa_ulong((unsigned long)va_arg(*a, void *));
-	if (*flg == 's')
-		e = ft_strdup(va_arg(*a, char *));
-	if (ft_strchr("c%", *flg))
-		e = ft_strdup("%");
-	if (*flg == 'c')
-		*e = (char)va_arg(*a, int);
-	return (ft_printf_trans(e, e, flg, 0));
-}
+//putstr is wrong because of %c=0, need write for len
 
-static int	*ft_printf_getflg(va_list *a, const char **fmt, int *flg)
+//flg[0] ->
+//flg["%-+ '#"]
+//flg[1] -> "width"
+//flg[2] -> ".precision"
+//flg[3] -> precision bool
+//flg[4] -> "%cspdiuxXobfFgG"
+//flg["%cspdiuxXobfFgG"]
+//flg[5] -> base
+//flg[6] -> sign
+
+static int	*ft_printf_flag(va_list *a, const char **fmt, int *flg)
 {
-	ft_bzero(flg, 128 * sizeof(int));
-	while (flg && ft_strchr("-+ 0'#", **fmt) && *(++(*fmt)))
-		flg[(int)(*((*fmt) - 1))] = 1;
-	while (flg && ft_isdigit(**fmt) && *(++(*fmt)))
-		flg[1] = (flg[1] * 10) + (*((*fmt) - 1) - '0');
-	if (flg && flg[1] == 0 && **fmt == '*' && *(++(*fmt)))
+	ft_bzero(flg + 1, (128 - 1) * sizeof(int));
+	while (ft_strchr("-+ 0'#", **fmt))
+		flg[(int)(*((*fmt)++))] = 1;
+	while (ft_isdigit(**fmt))
+		flg[1] = (flg[1] * 10) + (*((*fmt)++) - '0');
+	if (!flg[1] && **fmt == '*' && *(++(*fmt)))
 		flg[1] = va_arg(*a, int);
-	if (flg && **fmt == '.' && *(++(*fmt)) && ++flg[3])
-		while (ft_isdigit(**fmt) && *(++(*fmt)))
-			flg[2] = (flg[2] * 10) + (*((*fmt) - 1) - '0');
-	if (flg[2] == 0 && **fmt == '*' && *(++(*fmt)) && flg[3])
-		flg[2] = va_arg(*a, int);
+	if (**fmt == '.' && ++flg[3] && ft_isdigit(*(++(*fmt))) && ++flg[2])
+		while (ft_isdigit(**fmt))
+			flg[2] = (flg[2] * 10) + (*((*fmt)++) - '0');
+	if (!flg[2] && flg[3] && **fmt == '*' && *(++(*fmt)))
+		flg[2] = va_arg(*a, int) + 1;
 	if (**fmt == 'l' && *(++(*fmt)))
 		flg['l']++;
-	*flg = *((*fmt)++);
-	if ((!ft_strchr("%cspdiuxXobfFgG", *flg)))
+	flg[4] = *((*fmt)++);
+	if (!ft_strchr("cspdiuxXobfFgGeE", flg[4]) || flg[1] < 0 || flg[2] < 0)
+		return (NULL);
+	flg[(int)flg[4]]++;
+	flg[5] = (2 * (flg['b'] + 8 * flg['o'] + 10 * flg['u']));
+	flg[5] += (16 * (ft_strchr("xXp", flg[4]) != NULL));
+	flg[6] = flg['+'] * '+' + flg[' '] * ' ' * !flg['+'];
+	if (ft_strchr("xXs", flg[4]) && flg[6])
 		return (NULL);
 	return (flg);
 }
 
-static char	*ft_printf_trans(char *e, char *f, int *flg, int base)
-{
-	base += (2 * (*flg == 'b')) + (8 * (*flg == 'o')) + (10 * (*flg == 'u'));
-	base += (16 * (ft_strchr("xXp", *flg) != NULL));
-	if (base)
-		e = ft_atoabase(e, 10, base);
-	if (*flg == 's' && !e)
-		e = ft_strdup("(null)");
-	if (*flg == 'c' && *e == 0)
-		e = ft_strdup("^@");
-	if (f != e && f)
-		ft_free (f);
-	if (*flg == 'p' || (flg['#'] && ft_strchr("xX", *flg)))
-		e = ft_strjoin_free("0x", e, 2);
-	if (ft_isalpha_upper(*flg))
-		ft_strtoupper(e);
-	return (ft_printf_extend(e, flg, (size_t)flg[2]));
-}
+//1 line remaining
 
-static char	*ft_printf_extend(char *e, int *flg, size_t p)
+//what types are valid with # | ' ' | +
+
+//(ulong)long cast, test properly
+//check behaviour of itoa, ulong_min to ulong_max, long_min to long_max
+//no cast here, flg['l']
+//(unsigned int)long when negative X
+
+static char	*ft_printf_elem(va_list *a, const char **fmt, int *flg, char *e)
 {
-	if (p && *flg == 's' && ft_strlen(e) > p)
-		e[p] = 0;
-	if (p && ft_strchr("fF", *flg) && ft_strlen(ft_strchr(e, '.')) > p)
-		e[(ft_strchr(e, '.') - e) + flg[2] + 1] = 0;
-	if (ft_strchr("diouxX", *flg) && flg['+'] && !ft_strchr(e, '-'))
-		e = ft_strjoin_free("+", e, 2);
-	else if (ft_strchr("diouxX", *flg) && flg[' '] && !ft_strchr(e, '-'))
-		e = ft_strjoin_free(" ", e, 2);
-	while ((ft_strlen(e) + (flg[' '] || flg['+'])) < (size_t)flg[1])
-	{
-		if (flg['-'])
-			e = ft_strjoin_free(e, " ", 1);
-		else if (flg['0'] && ft_strchr("diouxX", *flg))
-			e = ft_strjoin_free("0", e, 2);
-		else
-			e = ft_strjoin_free(" ", e, 2);
-	}
+	if (!ft_printf_flag(a, fmt, flg))
+		return (NULL);
+	if (flg['l'] && ft_strchr("uxXob", flg[4]))
+		e = ft_itoa_ulong((unsigned int)va_arg(*a, long));
+	if (flg['l'] && ft_strchr("di", flg[4]))
+		e = ft_itoa(va_arg(*a, long));
+	if ((!flg['l']) && ft_strchr("diuxXob", flg[4]))
+		e = ft_itoa(va_arg(*a, int));
+	if (ft_strchr("fFgGeE", flg[4]))
+		e = ft_strdup(":)double to str, F|G|E:)");
+	if (flg['p'])
+		e = ft_itoa_ulong((unsigned long)va_arg(*a, void *));
+	if (flg['s'])
+		e = ft_strdup(va_arg(*a, char *));
+	if (flg['c'])
+		e = ft_strdup((char [2]){va_arg(*a, int), 0});
+	if (!flg['s'] && *e == '-')
+		flg[6] = '-' + 0 * (long)ft_memmove(e, e + 1, ft_strlen(e));
+	if (flg[5])
+		e = ft_atoa_base(e, 10, flg[5]) + (long)ft_free(e);
+	if (flg['s'] && !e)
+		e = ft_strdup("(null)");
+	if (ft_isalpha_upper(flg[4]))
+		ft_strtoupper(e);
+	return (ft_printf_trns(e, flg, (size_t)flg[1], (size_t)flg[2]) - 1);
+}
+//0 lines remaining
+
+//check value-1 for precision??
+
+//
+
+static char	*ft_printf_trns(char *e, int *flg, size_t w, size_t p)
+{
+	if (flg['s'] && p >= 0 && ft_strlen(e) > p)
+		e[flg[2]] = 0;
+	while (!flg['s'] && p >= 0 && ft_strlen(e) < p)
+		e = ft_strjoin("0", e) + (long)ft_free(e);
+	if (flg['p'] || (flg['#'] && ft_strchr("xX", flg[4])))
+		e = ft_strjoin("0x", e) + (long)ft_free(e);
+	if (flg[6])
+		e = ft_strjoin((char [2]){flg[6], 0}, e) + (long)ft_free(e);
+	while (w > ft_strlen(e) && !flg['-'] && !flg['c'])
+		e = ft_strjoin(" ", e) + (long)ft_free(e);
+	while (w > ft_strlen(e) && flg['-'] && !flg['c'])
+		e = ft_strjoin(e, " ") + (long)ft_free(e);
+	if (w > 1 && flg['c'])
+		e = ft_memset(ft_memset(ft_calloc(w + 1, 1), ' ', w) + \
+		w * !flg['-'] , *e, 1) - w * flg['-'] + (long)ft_free(e);
+	flg[7] = w + (!w * flg['c']) + (!w * ft_strlen(e) * !flg['c']);
+	printf("{flg[7]==%d}", flg[7]);
 	return (e);
 }
+
+//12 lines remaining
+
+// static char	*ft_printf_extend(char *e, int *flg, size_t w, size_t p)
+// {
+// 	(void)w;
+// 	if (p && ft_strchr("fF", *flg) && ft_strlen(ft_strchr(e, '.')) > p)
+// 		e[(ft_strchr(e, '.') - e) + flg[2] + 1] = 0;
+// 	while ((ft_strlen(e) + (flg[' '] || flg['+'])) < (size_t)flg[1])
+// 	{
+// 		if (flg['-'])
+// 			e = ft_strjoin_free(e, " ", 1);
+// 		else if (flg['0'] && ft_strchr("diouxX", *flg))
+// 			e = ft_strjoin_free("0", e, 2);
+// 		else
+// 			e = ft_strjoin_free(" ", e, 2);
+// 	}
+// 	return (e);
+// }

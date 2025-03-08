@@ -12,16 +12,16 @@
 
 #include "libft.h"
 
-static size_t	ft_ulong_length(unsigned long n);
+static int	ft_ulong_len(unsigned long n);
 
 char	*ft_itoa_ulong(unsigned long nbr)
 {
-	size_t	len;
 	char	*ret;
+	int		len;
 
 	if (nbr == 0)
 		return (ft_strdup("0"));
-	len = ft_ulong_length(nbr);
+	len = ft_ulong_len(nbr);
 	ret = (char *)ft_malloc((len + 1) * sizeof(char));
 	ret[len] = 0;
 	while (nbr)
@@ -33,9 +33,9 @@ char	*ft_itoa_ulong(unsigned long nbr)
 	return (ret);
 }
 
-static size_t	ft_ulong_length(unsigned long n)
+static int	ft_ulong_len(unsigned long n)
 {
-	size_t	l;
+	int	l;
 
 	l = 0;
 	while (n)

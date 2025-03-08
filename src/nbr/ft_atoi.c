@@ -27,55 +27,52 @@ long	ft_atoi(const char *str)
 	if (!ft_strncmp("0x", &str[i], 2) || !ft_strncmp("0X", &str[i], 2))
 		return (ft_atoi_hex(&str[i + 2]));
 	else
-		return (ft_atoi_dec(str));
+		return (ft_atoi_dec(&str[i]));
 }
 
 static long	ft_atoi_dec(const char *str)
 {
 	long	ret;
-	int		i;
+	long	prev;
 	int		sign;
+	int		i;
 
-	if (!str)
-		return (0);
 	i = 0;
-	while (ft_isspace(str[i]))
-		i++;
 	sign = +1;
-	if (str[i] == '-' || str[i] == '+')
-	{
-		if (str[i] == '-')
+	if (str[i] == '+' || str[i] == '-')
+		if (str[i++] == '-')
 			sign = -1;
-		i++;
-	}
 	ret = 0;
 	while (ft_isdigit(str[i]))
 	{
+		prev = ret;
 		ret *= 10;
 		ret += str[i] - '0';
+		if (prev > ret && sign == +1)
+			return (LONG_MAX);
+		if (prev > ret && sign == -1)
+			return (LONG_MIN);
 		i++;
 	}
 	return (ret * sign);
 }
 
-static long	ft_atoi_hex(const char *s)
+static long	ft_atoi_hex(const char *str)
 {
-	int		i;
 	long	ret;
-	char	*dict;
-	char	*str;
+	long	prev;
+	int		i;
 
 	i = 0;
 	ret = 0;
-	dict = "0123456789abcdef";
-	str = ft_strdup(s);
-	str = ft_strtolower(str);
-	while (str[i] && ft_strchr(dict, str[i]))
+	while (ft_hexoffset(str[i]))
 	{
+		prev = ret;
 		ret *= 16;
-		ret += ft_strchr(dict, str[i]) - dict;
+		ret += str[i] - ft_hexoffset(str[i]);
+		if (prev > ret)
+			return (LONG_MAX);
 		i++;
 	}
-	ft_free (str);
 	return (ret);
 }
