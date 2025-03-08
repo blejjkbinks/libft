@@ -139,7 +139,7 @@ static char	*ft_printf_elem(va_list *a, const char **fmt, int *flg, char *e)
 		e = ft_strdup("(null)");
 	if (ft_isalpha_upper(flg[4]))
 		ft_strtoupper(e);
-	return (ft_printf_trns(e, flg, (size_t)flg[1], (size_t)flg[2]) - 1);
+	return (ft_printf_trns(e, flg, (size_t)flg[1], (size_t)flg[2]));
 }
 //0 lines remaining
 
@@ -149,9 +149,9 @@ static char	*ft_printf_elem(va_list *a, const char **fmt, int *flg, char *e)
 
 static char	*ft_printf_trns(char *e, int *flg, size_t w, size_t p)
 {
-	if (flg['s'] && p >= 0 && ft_strlen(e) > p)
-		e[flg[2]] = 0;
-	while (!flg['s'] && p >= 0 && ft_strlen(e) < p)
+	if (flg[3] && flg['s'] && p >= 0 && ft_strlen(e) > p - 1)
+		e[flg[2] - 1] = 0;
+	while (flg[3] && !flg['s'] && p >= 0 && ft_strlen(e) < p - 1)
 		e = ft_strjoin("0", e) + (long)ft_free(e);
 	if (flg['p'] || (flg['#'] && ft_strchr("xX", flg[4])))
 		e = ft_strjoin("0x", e) + (long)ft_free(e);
