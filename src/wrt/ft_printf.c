@@ -84,11 +84,11 @@ static int	*ft_printf_flag(va_list *a, const char **fmt, int *flg)
 		flg[1] = (flg[1] * 10) + (*((*fmt)++) - '0');
 	if (!flg[1] && **fmt == '*' && *(++(*fmt)))
 		flg[1] = va_arg(*a, int);
-	if (**fmt == '.' && ++flg[3] && ft_isdigit(*(++(*fmt))) && ++flg[2])
+	if (**fmt == '.' && ++flg[3] && ft_isdigit(*(++(*fmt))))
 		while (ft_isdigit(**fmt))
 			flg[2] = (flg[2] * 10) + (*((*fmt)++) - '0');
 	if (!flg[2] && flg[3] && **fmt == '*' && *(++(*fmt)))
-		flg[2] = va_arg(*a, int) + 1;
+		flg[2] = va_arg(*a, int);
 	if (**fmt == 'l' && *(++(*fmt)))
 		flg['l']++;
 	flg[4] = *((*fmt)++);
@@ -141,9 +141,9 @@ static char	*ft_printf_elem(va_list *a, const char **fmt, int *flg, char *e)
 
 static char	*ft_printf_trns(char *e, int *flg, size_t w, size_t p)
 {
-	if (flg[3] && flg['s'] && p - 1 > 0 && ft_strlen(e) > p - 1)
-		e[flg[2] - 1] = 0;
-	while (flg[3] && !flg['s'] && p - 1 > 0 && ft_strlen(e) < p - 1)
+	if (flg[3] && flg['s'] && ft_strlen(e) > p)
+		e[flg[2]] = 0;
+	while (flg[3] && !flg['s'] && ft_strlen(e) < p)
 		e = ft_strjoin("0", e) + (long)ft_free(e);
 	if (flg['p'] || (flg['#'] && ft_strchr("xX", flg[4])))
 		e = ft_strjoin("0x", e) + (long)ft_free(e);
