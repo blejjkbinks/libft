@@ -57,8 +57,8 @@ int	ft_printf(const char *fmt, ...)
 			len += flg[7] + 0 * write(1, str, flg[7]) + (long)ft_free(str);
 		}
 		else if (*fmt)
-			len += ft_putchar_fd(*(fmt++), 1);
 			len += 1 + 0 * write(1, fmt++, 1);
+		//len += ft_putchar_fd(*(fmt++), 1);
 	}
 	va_end(ap);
 	return ((len * (*fmt == 0)) + (-1 * (*fmt != 0)));
@@ -149,9 +149,9 @@ static char	*ft_printf_elem(va_list *a, const char **fmt, int *flg, char *e)
 
 static char	*ft_printf_trns(char *e, int *flg, size_t w, size_t p)
 {
-	if (flg[3] && flg['s'] && p - 1> 0 && ft_strlen(e) > p - 1)
+	if (flg[3] && flg['s'] && p - 1 > 0 && ft_strlen(e) > p - 1)
 		e[flg[2] - 1] = 0;
-	while (flg[3] && !flg['s'] && p - 1 >= 0 && ft_strlen(e) < p - 1)
+	while (flg[3] && !flg['s'] && p - 1 > 0 && ft_strlen(e) < p - 1)
 		e = ft_strjoin("0", e) + (long)ft_free(e);
 	if (flg['p'] || (flg['#'] && ft_strchr("xX", flg[4])))
 		e = ft_strjoin("0x", e) + (long)ft_free(e);
