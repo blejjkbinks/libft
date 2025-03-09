@@ -12,9 +12,9 @@
 
 #include "libft.h"
 
-#include <stdio.h>
+//#include <stdio.h>
 
-void	ft_printf_debug(char *str, int *flg)
+/*void	ft_printf_debug(char *str, int *flg)
 {
 	printf("{");
 	printf("[%d:|%c|]", 4, flg[4]);
@@ -29,7 +29,7 @@ void	ft_printf_debug(char *str, int *flg)
 			printf("[%d:'%c']", i, flg[i]);
 	}
 	printf("->|%s|}\n", str);
-}
+}*/
 
 static int	*ft_printf_flag(va_list *a, const char **fmt, int *flg);
 static char	*ft_printf_elem(va_list *a, const char **fmt, int *flg, char *e);
@@ -69,6 +69,9 @@ int	ft_printf(const char *fmt, ...)
 //flg["%cspdiuxXobfFgG"]
 //flg[5] -> base
 //flg[6] -> sign
+//flg[7] -> elem.len
+//flg[8] -> diff'0'		((001234) len=4, w=6, d=2)
+//flg[9] -> diff' '
 
 static int	*ft_printf_flag(va_list *a, const char **fmt, int *flg)
 {
@@ -138,24 +141,49 @@ static char	*ft_printf_trns(char *e, int *flg, size_t w, size_t p)
 {
 	if (flg[3] && flg['s'] && ft_strlen(e) > p)
 		e[flg[2]] = 0;
-	while (flg[3] && !flg['s'] && ft_strlen(e) < p)
-		e = ft_strjoin("0", e) + (long)ft_free(e);
+	flg[8] = p - ft_strlen(e);
+	if (flg[3] && !flg['s'] && ft_strlen(e) < p)
+		e = ft_memmove(ft_memset(ft_calloc(p + 1, 1), '0', p) + \
+			flg[8], e, ft_strlen(e)) - flg[8] + (long)ft_free(e);
 	if (flg['p'] || (flg['#'] && ft_strchr("xX", flg[4])))
 		e = ft_strjoin("0x", e) + (long)ft_free(e);
-	e = ft_strjoin((char [2]){flg[6], 0}, e) + (long)ft_free(e);
+	if (flg[6])
+		e = ft_strjoin((char [2]){flg[6], 0}, e) + (long)ft_free(e);
+	flg[10] = ft_strlen(e) * !flg['c'] + flg['c'];
+	flg[9] = !flg['-'] * (w - flg[10]);
+	if ((w > ft_strlen(e) && !flg['c']) || (w > 1 && flg['c']))
+		e = ft_memmove(ft_memset(ft_calloc(w + 1, 1), ' ', w) + \
+			flg[9], e, flg[10]) - flg[9] + (long)ft_free(e);
+	flg[7] = w + (!w * flg['c']) + (!w * !flg['c'] * ft_strlen(e));
+	return (e);
+}
+
+//!flg['-'] * (w - (ft_strlen(e) * !flg['c']) + flg['c'])
+
+/*
+while (flg[3] && !flg['s'] && ft_strlen(e) < p)
+	e = ft_strjoin("0", e) + (long)ft_free(e);
+*/
+
+/*
 	while (w > ft_strlen(e) && !flg['-'] && !flg['c'])
 		e = ft_strjoin(" ", e) + (long)ft_free(e);
 	while (w > ft_strlen(e) && flg['-'] && !flg['c'])
 		e = ft_strjoin(e, " ") + (long)ft_free(e);
+*/
+
+/*
+if (w > 1 && flg['c'])
+e = ft_memset(ft_memset(ft_calloc(w + 1, 1), ' ', w) + (!flg['-'] * \
+	(w - 1)), *e, 1) - (!flg['-'] * (w - 1)) + (long)ft_free(e);
+*/
+
+/*
 	if (w > 1 && flg['c'])
-		e = ft_memset(ft_memset(ft_calloc(w + 1, 1), ' ', w) + (!flg['-'] * (w - 1)), *e, 1) - (!flg['-'] * (w - 1)) + (long)ft_free(e);
-	/*if (w > 1 && flg['c'])
 	{
 		p = (size_t)ft_memset(ft_calloc(w + 1, 1), ' ', w);
 		((char *)p)[!flg['-'] * (w - 1)] = *e;
 		free(e);
 		e = (char *)p;
-	}*/
-	flg[7] = w + (!w * flg['c']) + (!w * !flg['c'] * ft_strlen(e));
-	return (e);
-}
+	}
+*/
