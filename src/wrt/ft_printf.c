@@ -12,53 +12,7 @@
 
 #include "libft.h"
 
-//#include <stdio.h>
-
-/*void	ft_printf_debug(char *str, int *flg)
-{
-	printf("{");
-	printf("[%d:|%c|]", 4, flg[4]);
-	for (int i = 0; i < 128; i++)
-	{
-		if (i <= 6)
-		{
-			if (flg[i])
-				printf("[%d:|%d|]", i, flg[i]);
-		}
-		if (ft_isprint(flg[i]))
-			printf("[%d:'%c']", i, flg[i]);
-	}
-	printf("->|%s|}\n", str);
-}*/
-
-static int	*ft_printf_flag(va_list *a, const char **fmt, int *flg);
-static char	*ft_printf_elem(va_list *a, const char **fmt, int *flg, char *e);
-static char	*ft_printf_trns(char *e, int *flg, size_t w, size_t p);
-
-int	ft_printf(const char *fmt, ...)
-{
-	va_list	ap;
-	char	*str;
-	int		len;
-	int		flg[128];
-
-	va_start(ap, fmt);
-	len = 0;
-	while (fmt && *fmt)
-	{
-		if (*fmt == '%' && *(fmt + 1) && *(++fmt) != '%')
-		{
-			str = ft_printf_elem(&ap, &fmt, flg, NULL);
-			if (!str)
-				break ;
-			len += flg[7] + 0 * write(1, str, flg[7]) + (long)ft_free(str);
-		}
-		else if (*fmt)
-			len += 1 + 0 * write(1, fmt++, 1);
-	}
-	va_end(ap);
-	return ((len * (*fmt == 0)) + (-1 * (*fmt != 0)));
-}
+#include <stdio.h>
 
 //flg[0] ->
 //flg["%-+ '#"]
@@ -72,6 +26,63 @@ int	ft_printf(const char *fmt, ...)
 //flg[7] -> elem.len
 //flg[8] -> diff'0'		((001234) len=4, w=6, d=2)
 //flg[9] -> diff' '
+//flg[10]-> ft_strlen(e) or ft_strlen('c')
+
+void	ft_printf_debug(char *elem, int *flg)
+{
+	char	**n;
+	int		i;
+
+	n = ft_split("width,precision,p_bool,type,base,sign,len,diff0,diff", ',');
+	printf("{");
+	i = 0;
+	while (n[i])
+	{
+		if (flg[i + 1] && i != 3 && ft_strcmp(n[i], "sign"))
+			printf("[%s:%d]", n[i], flg[i + 1]);
+		if (flg[i + 1] && !ft_strcmp(n[i], "sign"))
+			printf("[%s:%c]", n[i], flg[i + 1]);
+		i++;
+	}
+	while (i < 128)
+	{
+		if (ft_isprint(i) && flg[i])
+			printf("[%c]", i);
+		i++;
+	}
+	printf("->|%s|}\n", elem);
+	ft_split_free(n);
+}
+
+static int	*ft_printf_flag(va_list *a, const char **fmt, int *flg);
+static char	*ft_printf_elem(va_list *a, const char **fmt, int *flg, char *e);
+static char	*ft_printf_trns(char *e, int *flg);
+
+int	ft_printf(const char *fmt, ...)
+{
+	va_list	ap;
+	char	*elem;
+	int		len;
+	int		flg[128];
+
+	va_start(ap, fmt);
+	len = 0;
+	while (fmt && *fmt)
+	{
+		if (*fmt == '%' && *(fmt + 1) && *(++fmt) != '%')
+		{
+			elem = ft_printf_elem(&ap, &fmt, flg, NULL);
+			ft_printf_debug(elem, flg);
+			if (!elem)
+				break ;
+			len += flg[7] + 0 * write(1, elem, flg[7]) + (long)ft_free(elem);
+		}
+		else if (*fmt)
+			len += 1 + 0 * write(1, fmt++, 1);
+	}
+	va_end(ap);
+	return ((len * (*fmt == 0)) + (-1 * (*fmt != 0)));
+}
 
 static int	*ft_printf_flag(va_list *a, const char **fmt, int *flg)
 {
@@ -111,7 +122,7 @@ static int	*ft_printf_flag(va_list *a, const char **fmt, int *flg)
 static char	*ft_printf_elem(va_list *a, const char **fmt, int *flg, char *e)
 {
 	if (!ft_printf_flag(a, fmt, flg))
-		return (NULL);
+		return ((char *)(0 * write(1, "invalid_printf_flag\n", 20)));
 	if (flg['l'] && ft_strchr("uxXob", flg[4]))
 		e = ft_itoa_ulong((unsigned int)va_arg(*a, long));
 	if (flg['l'] && ft_strchr("di", flg[4]))
@@ -134,27 +145,27 @@ static char	*ft_printf_elem(va_list *a, const char **fmt, int *flg, char *e)
 		e = ft_strdup("(null)");
 	if (ft_isalpha_upper(flg[4]))
 		ft_strtoupper(e);
-	return (ft_printf_trns(e, flg, (size_t)flg[1], (size_t)flg[2]));
+	return (ft_printf_trns(e, flg));
 }
 
-static char	*ft_printf_trns(char *e, int *flg, size_t w, size_t p)
+static char	*ft_printf_trns(char *e, int *flg)
 {
-	if (flg[3] && flg['s'] && ft_strlen(e) > p)
+	if (flg[3] && flg['s'] && ft_strlen(e) > (size_t)flg[2])
 		e[flg[2]] = 0;
-	flg[8] = p - ft_strlen(e);
-	if (flg[3] && !flg['s'] && ft_strlen(e) < p)
-		e = ft_memmove(ft_memset(ft_calloc(p + 1, 1), '0', p) + \
+	flg[8] = flg[2] - ft_strlen(e);
+	if (flg[3] && !flg['s'] && ft_strlen(e) < (size_t)flg[2])
+		e = ft_memmove(ft_memset(ft_calloc(flg[2] + 1, 1), '0', flg[2]) + \
 			flg[8], e, ft_strlen(e)) - flg[8] + (long)ft_free(e);
 	if (flg['p'] || (flg['#'] && ft_strchr("xX", flg[4])))
 		e = ft_strjoin("0x", e) + (long)ft_free(e);
 	if (flg[6])
 		e = ft_strjoin((char [2]){flg[6], 0}, e) + (long)ft_free(e);
 	flg[10] = ft_strlen(e) * !flg['c'] + flg['c'];
-	flg[9] = !flg['-'] * (w - flg[10]);
-	if ((w > ft_strlen(e) && !flg['c']) || (w > 1 && flg['c']))
-		e = ft_memmove(ft_memset(ft_calloc(w + 1, 1), ' ', w) + \
+	flg[9] = !flg['-'] * (flg[1] - flg[10]);
+	if ((flg[1] > (int)ft_strlen(e) && !flg['c']) || (flg[1] > 1 && flg['c']))
+		e = ft_memmove(ft_memset(ft_calloc(flg[1] + 1, 1), ' ', flg[1]) + \
 			flg[9], e, flg[10]) - flg[9] + (long)ft_free(e);
-	flg[7] = w + (!w * flg['c']) + (!w * !flg['c'] * ft_strlen(e));
+	flg[7] = flg[1] + !flg[1] * flg['c'] + !flg[1] * !flg['c'] * ft_strlen(e);
 	return (e);
 }
 

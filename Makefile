@@ -155,4 +155,6 @@ test: all $(TEST_C)
 	./$(TEST_A) | cat -e
 	@printf "###\n^^^^^\ndone :)\n"
 
-.PHONY: all clean fclean bonus test testclean countfiles gitstat gitpush source_txt
+.PHONY: all clean fclean bonus \
+	test testclean countfiles \
+	gitstat gitpush source_txt

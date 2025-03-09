@@ -14,22 +14,25 @@
 
 static void	ft_test_split(char *line, char **pipe, char **comm, char *s);
 static void	ft_test_showsplit(char **split, char *d, int n, int i);
+static void	ft_test_atoi(char *line, char *arg, char *s, char *o);
 
 void	ft_test_libft(void)
 {
 	char	*line;
 
-	line = get_next_line(0 + (0 * ft_printf("testing libft :)\n$main> ")));
+	line = get_next_line(0 * ft_printf("testing libft :)\n$main> "));
 	while (ft_strcmp(line, "done"))
 	{
 		ft_printf("get_next_line got:'%s'", line);
 		if (!ft_strcmp(line, "split"))
 			ft_test_split(NULL, NULL, NULL, "split");
+		if (!ft_strcmp(line, "atoi"))
+			ft_test_atoi(NULL, NULL, "atoi", "base=");
 		if (!ft_strcmp(line, "r"))
 			ft_printf("\n->%d", ft_mod_range(ft_random(), 100));
-		line = get_next_line((ft_printf("\n$main> ")) * (long)ft_free(line));
+		line = get_next_line(ft_printf("\n$main> ") * (long)ft_free(line));
 	}
-	ft_printf("done testing libft :)", ft_free(line));
+	line = ft_printf("done testing libft :)") + ft_free(line);
 }
 
 static void	ft_test_split(char *line, char **pipe, char **comm, char *s)
@@ -56,7 +59,7 @@ static void	ft_test_split(char *line, char **pipe, char **comm, char *s)
 		ft_split_free(pipe);
 		line = get_next_line(ft_printf("$%s> ", s) * (long)ft_free(line));
 	}
-	ft_printf("done testing %s", s, ft_free(line));
+	line = ft_printf("done testing %s", s) + ft_free(line);
 }
 
 static void	ft_test_showsplit(char **split, char *d, int n, int i)
@@ -77,6 +80,24 @@ static void	ft_test_showsplit(char **split, char *d, int n, int i)
 		i++;
 	}
 	ft_printf("\n");
+}
+
+static void	ft_test_atoi(char *line, char *arg, char *s, char *o)
+{
+	line = get_next_line(0 * ft_printf("\ntesting %s :)\n$%s> ", s, s));
+	arg = ft_strdup("10");
+	while (ft_strcmp(line, "done"))
+	{
+		if (!ft_strncmp(line, o, ft_strlen(o)))
+			arg = ft_strdup(line + ft_strlen(o) + (long)ft_free(arg));
+		else
+		{
+			ft_printf("line:%s, base:%s\n", line, arg);
+			ft_printf("%ld\n", ft_atoi_base(line, ft_atoi(arg)));
+		}
+		line = get_next_line(ft_printf("$%s> ", s) * (long)ft_free(line));
+	}
+	line = ft_printf("done testing %s", s) + ft_free(line);
 }
 
 /*

@@ -27,7 +27,10 @@ char	*get_next_line(int fd)
 	{
 		ret[++i] = 0;
 		if (ret[i - 1] == '\n')
+		{
+			ret[i - 1] = 0;
 			return (ret);
+		}
 		if (i + 1 == c)
 			ret = ft_realloc_gnl(ret, &c);
 	}
