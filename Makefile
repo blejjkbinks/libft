@@ -63,7 +63,7 @@ SRC_SPLIT := \
 	isquoted_closed \
 
 SRC_STR := \
-	strchr	strrchr	strjoin	strjoin_free	strnjoin \
+	strchr	strrchr	strjoin \
 	strlcat	strlcpy	strlen strnlen \
 	strncmp	strcmp	strnstr	strtrim	substr \
 
@@ -87,7 +87,7 @@ $(OBJ_DIR):
 
 $(OBJ): $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	@$(CC) -c $< -o $@
-	@printf "%s " $(basename $(notdir $<) | sed 's/^ft_//')
+	@printf "%s " $(notdir $@) | sed 's/^ft_//'
 
 $(NAME): $(OBJ_DIR) $(OBJ)
 	@$(AR) $(NAME) $(OBJ)

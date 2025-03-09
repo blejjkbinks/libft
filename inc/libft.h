@@ -46,8 +46,6 @@ int		ft_strncmp(const char *s1, const char *s2, size_t len);
 char	*ft_strnstr(const char *str, const char *find, size_t len);
 char	*ft_substr(const char *str, unsigned int start, size_t len);
 char	*ft_strjoin(const char *s1, const char *s2);
-char	*ft_strjoin_free(char *s1, char *s2, int fr);	//only in ft_printf
-char	*ft_strnjoin(int count, ...);					//less malloc, usefull?
 char	*ft_strtrim(const char *str, const char *set);
 
 //split
