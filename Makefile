@@ -1,12 +1,12 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    makefile                                           :+:      :+:    :+:    #
+#    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: rdomange <romitdomange@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/24 14:35:21 by rdomange          #+#    #+#              #
-#    Updated: 2025/02/13 20:50:54 by rdomange         ###   ########.fr        #
+#    Updated: 2025/03/13 00:42:06 by rdomange         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -125,14 +125,14 @@ gitpush: gitstat
 	git commit -m "$(GIT_PUSH_MESSAGE)"
 	git push
 
-SOURCE_TXT := libft_source.txt
-source_txt:
-	@> $(SOURCE_TXT)
+SOURCETXT := libft_source.txt
+sourcetxt:
+	@> $(SOURCETXT)
 	@for file in $(SRC); do \
-		echo $$file >> $(SOURCE_TXT); \
-		tail -n +14 $$file >> $(SOURCE_TXT); \
+		echo $$file >> $(SOURCETXT); \
+		tail -n +14 $$file >> $(SOURCETXT); \
 	done
-	@mv $(SOURCE_TXT) ~/Desktop/$(SOURCE_TXT)
+	@mv $(SOURCETXT) ~/Desktop/$(SOURCETXT)
 	@echo ok its on your desktop
 
 ## test rules  ##
@@ -157,4 +157,4 @@ test: all $(TEST_C)
 
 .PHONY: all clean fclean bonus \
 	test testclean countfiles \
-	gitstat gitpush source_txt
+	gitstat gitpush sourcetxt
