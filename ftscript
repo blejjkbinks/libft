@@ -3,8 +3,12 @@
 REAL_DIR="$(dirname "$(realpath "$0")")"
 REAL_SCRIPT="$REAL_DIR/ftscript"
 COMMANDS_DIR="$REAL_DIR/.ftscript_links"
-COMMANDS_LIST=("ftscript_rmlinks" "ftcleandsstore" "ftcountfiles" \
-				"ftgitstat" "ftgitpush" "ftsourcetxt")
+COMMANDS_LIST=( "ftscript_rmlinks" \
+				"ftcleandsstore" \
+				"ftcountfiles" \
+				"ftgitstat" \
+				"ftgitpush" \
+				"ftsourcetxt")
 
 if [[ $# -eq 0 ]]; then
 	if [[ "$(basename "$0")" == "ftscript" ]]; then
@@ -74,14 +78,18 @@ case "$COMMAND_NAME" in
 		find . -name '.DS_Store' -type f -delete
 		;;	#ftclean_dsstore
 	"ftcountfiles")
-		make -C "$REAL_DIR" re
+		make re
+		if [[ $? -ne 0 ]]; then
+			echo no makefile
+			exit 1
+		fi
 		norminette -v > /dev/null
 		if [[ $? -ne 0 ]]; then
 			echo "norminette not installed"
 		else
 			printf "norminette KOs: "
 			norminette "$REAL_PATH" | grep Error! | wc -l
-			norminette "$REAL_PATH" > /dev/null
+			norminette "$REAL_PATH" > /dev/null		#norminette max depth
 			if [[ $? -ne 0 ]]; then
 				norminette "$REAL_PATH" | grep Error!
 			fi
@@ -91,11 +99,11 @@ case "$COMMAND_NAME" in
 			echo "tree not installed"
 		else
 			printf "src: "
-			tree "$REAL_DIR/src" | grep files
+			tree src* | grep files
 			printf "obj: "
-			tree "$REAL_DIR/obj" | grep files
+			tree obj* | grep files
 		fi
-		make -C "$REAL_DIR" fclean
+		make fclean
 		;;	#ftcountfiles
 	"ftgitstat")
 		$REAL_SCRIPT ftcleandsstore
