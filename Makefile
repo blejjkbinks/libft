@@ -104,14 +104,6 @@ re: fclean all
 
 ## funny rules  ##
 
-m := pushed from libft makefile on $(shell date +"%d/%m %H:%M")
-GIT_PUSH_MESSAGE := $(m)
-
-gitpush: gitstat
-	git add .
-	git commit -m "$(GIT_PUSH_MESSAGE)"
-	git push
-
 SOURCETXT := libft_source.txt
 sourcetxt:
 	@> $(SOURCETXT)

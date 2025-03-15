@@ -3,8 +3,8 @@
 REAL_DIR="$(dirname "$(realpath "$0")")"
 REAL_SCRIPT="$REAL_DIR/ftscript"
 COMMANDS_DIR="$REAL_DIR/.ftscript_links"
-COMMANDS_LIST=("ftclean_links" "ftclean_dsstore" "ftcountfiles" \
-				"ftgitstat" "ftgitpush" "com1" "com2")
+COMMANDS_LIST=("ftscript_rmlinks" "ftcleandsstore" "ftcountfiles" \
+				"ftgitstat" "ftgitpush" "ftsourcetxt")
 
 if [[ $# -eq 0 ]]; then
 	if [[ "$(basename "$0")" == "ftscript" ]]; then
@@ -49,7 +49,6 @@ case "$COMMAND_NAME" in
 		else
 			echo "symlinks already exist"
 		fi
-
 		if [[ "$0" != "$BASH_SOURCE" ]]; then
 			if [[ ":$PATH:" != *":$COMMANDS_DIR:"* ]]; then
 				export PATH="$PATH:$COMMANDS_DIR"
@@ -59,22 +58,21 @@ case "$COMMAND_NAME" in
 			fi
 			return 0
 		fi
-
 		if [[ ":$PATH:" != *":$COMMANDS_DIR:"* ]]; then
 			echo "run 'source ftscript' to add them to your PATH"
 		else
 			echo "symlinks already in PATH"
 		fi
 		exit 0
-		;;
-	"ftclean_links")
+		;;	#setup
+	"ftscript_rmlinks")
 		echo "removing symlinks"
 		rm -rf "$COMMANDS_DIR"
-		;;
-	"ftclean_dsstore")
+		;;	#ftclean_links
+	"ftcleandsstore")
 		echo "removing DS_Store"
 		find . -name '.DS_Store' -type f -delete
-		;;
+		;;	#ftclean_dsstore
 	"ftcountfiles")
 		make -C "$REAL_DIR" re
 		norminette -v > /dev/null
@@ -82,10 +80,10 @@ case "$COMMAND_NAME" in
 			echo "norminette not installed"
 		else
 			printf "norminette KOs: "
-			norminette | grep Error! | wc -l
-			norminette > /dev/null
+			norminette "$REAL_PATH" | grep Error! | wc -l
+			norminette "$REAL_PATH" > /dev/null
 			if [[ $? -ne 0 ]]; then
-				norminette | grep Error!
+				norminette "$REAL_PATH" | grep Error!
 			fi
 		fi
 		tree / -L 1 > /dev/null
@@ -98,29 +96,36 @@ case "$COMMAND_NAME" in
 			tree "$REAL_DIR/obj" | grep files
 		fi
 		make -C "$REAL_DIR" fclean
-		;;
+		;;	#ftcountfiles
 	"ftgitstat")
-		$REAL_SCRIPT ftclean_dsstore
-		git status
-		;;
+		$REAL_SCRIPT ftcleandsstore
+		git status -s -b
+		;;	#ftgitstat
 	"ftgitpush")
 		$REAL_SCRIPT ftgitstat
+		if [[ $? -ne 0 ]]; then
+			echo "not a git repo"
+			exit 1
+		fi
 		git branch
 		echo "commit message??"
 		read COMMIT_MESSAGE
 		if [[ $COMMIT_MESSAGE != "cancel" ]]; then
 			if [[ -z "$COMMIT_MESSAGE" ]]; then
-				COMMIT_MESSAGE="ftscript pushed on $(date +"%d/%m %H:%M")"
+				COMMIT_MESSAGE="ftscript $(date +"%d/%m %H:%M")"
 			fi
 			git add .
-			$REAL_SCRIPT ftgitstat
+			git status
 			git commit -m "$COMMIT_MESSAGE"
 			git push
 		fi
-		;;
+		;;	#ftgitpush
+	"ftsourcetxt")
+		echo source txt
+		;;	#ftsourcetxt
 	*)
 		echo "didnt find command: $COMMAND_NAME"
 		;;
 esac
 
-
+#countfiles and sourcetxt can work in any project, find a way to list *.c and *.o
