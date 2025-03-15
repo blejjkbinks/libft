@@ -109,6 +109,9 @@ case "$COMMAND_NAME" in
 		echo "commit message??"
 		read COMMIT_MESSAGE
 		if [[ $COMMIT_MESSAGE != "cancel" ]]; then
+			if [[ -z "$COMMIT_MESSAGE" ]]; then
+				COMMIT_MESSAGE="ftscript pushed on $(date +"%d/%m %H:%M")"
+			fi
 			git add .
 			$REAL_SCRIPT ftgitstat
 			git commit -m "$COMMIT_MESSAGE"
