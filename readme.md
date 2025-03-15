@@ -1,6 +1,11 @@
 # LIBFT
 
 ## todo asap
+- atoa_base is wrong, only need itoa(nbr, base) and atoa(nbr, srcB, dstB)
+- ft_printf needs atoa reworked
+- understand unit test
+- ftscript, execute from anywhere to anywhere?
+- ftscript, source, setup, toomanyargs, old makefile stuff,
 
 ## remove
 

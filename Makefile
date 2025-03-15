@@ -104,19 +104,6 @@ re: fclean all
 
 ## funny rules  ##
 
-countfiles: all testclean
-	@printf "norminette KOs: "
-	@norminette | grep Error! | wc -l
-	@printf "src: "
-	@tree $(SRC_DIR) | grep files
-	@printf "obj: "
-	@tree $(OBJ_DIR) | grep files
-	@$(MAKE) fclean
-
-gitstat: fclean
-	find . -name '.DS_Store' -type f -delete
-	git status
-
 m := pushed from libft makefile on $(shell date +"%d/%m %H:%M")
 GIT_PUSH_MESSAGE := $(m)
 

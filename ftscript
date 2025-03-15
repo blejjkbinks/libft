@@ -1,0 +1,123 @@
+#!/bin/bash
+
+REAL_DIR="$(dirname "$(realpath "$0")")"
+REAL_SCRIPT="$REAL_DIR/ftscript"
+COMMANDS_DIR="$REAL_DIR/.ftscript_links"
+COMMANDS_LIST=("ftclean_links" "ftclean_dsstore" "ftcountfiles" \
+				"ftgitstat" "ftgitpush" "com1" "com2")
+
+if [[ $# -eq 0 ]]; then
+	if [[ "$(basename "$0")" == "ftscript" ]]; then
+		COMMAND_NAME="setup"
+	else
+		COMMAND_NAME=$(basename "$0")
+	fi
+elif [[ $# -eq 1 && "$(basename "$0")" == "ftscript" ]]; then
+	COMMAND_NAME="$1"
+else
+	COMMAND_NAME="wrong arguments"
+fi
+
+## debug ##
+if [[ "N" == "Y" ]]; then
+
+echo debugging
+echo 0: $0
+echo 1: $1
+echo all: $*
+echo bashsource: "$BASH_SOURCE"
+echo '#':$#
+echo "command name: " "$COMMAND_NAME"
+
+if [[ "$0" != "$BASH_SOURCE" ]]; then
+	return 1
+else
+	exit 1
+fi
+
+fi
+## end debug ##
+
+case "$COMMAND_NAME" in
+	"setup")
+		if [ ! -d "$COMMANDS_DIR" ]; then
+			mkdir -p "$COMMANDS_DIR"
+			for COMMAND in "${COMMANDS_LIST[@]}"; do
+				ln -sf $(realpath "$0") "$COMMANDS_DIR/$COMMAND"
+			done
+			echo "created symlinks: ${COMMANDS_LIST[*]}"
+		else
+			echo "symlinks already exist"
+		fi
+
+		if [[ "$0" != "$BASH_SOURCE" ]]; then
+			if [[ ":$PATH:" != *":$COMMANDS_DIR:"* ]]; then
+				export PATH="$PATH:$COMMANDS_DIR"
+				echo "PATH updated"
+			else
+				echo "symlinks already in PATH"
+			fi
+			return 0
+		fi
+
+		if [[ ":$PATH:" != *":$COMMANDS_DIR:"* ]]; then
+			echo "run 'source ftscript' to add them to your PATH"
+		else
+			echo "symlinks already in PATH"
+		fi
+		exit 0
+		;;
+	"ftclean_links")
+		echo "removing symlinks"
+		rm -rf "$COMMANDS_DIR"
+		;;
+	"ftclean_dsstore")
+		echo "removing DS_Store"
+		find . -name '.DS_Store' -type f -delete
+		;;
+	"ftcountfiles")
+		make -C "$REAL_DIR" re
+		norminette -v > /dev/null
+		if [[ $? -ne 0 ]]; then
+			echo "norminette not installed"
+		else
+			printf "norminette KOs: "
+			norminette | grep Error! | wc -l
+			norminette > /dev/null
+			if [[ $? -ne 0 ]]; then
+				norminette | grep Error!
+			fi
+		fi
+		tree / -L 1 > /dev/null
+		if [[ $? -ne 0 ]]; then
+			echo "tree not installed"
+		else
+			printf "src: "
+			tree "$REAL_DIR/src" | grep files
+			printf "obj: "
+			tree "$REAL_DIR/obj" | grep files
+		fi
+		make -C "$REAL_DIR" fclean
+		;;
+	"ftgitstat")
+		$REAL_SCRIPT ftclean_dsstore
+		git status
+		;;
+	"ftgitpush")
+		$REAL_SCRIPT ftgitstat
+		git branch
+		echo "commit message??"
+		read COMMIT_MESSAGE
+		if [[ $COMMIT_MESSAGE != "cancel" ]]; then
+			git add .
+			$REAL_SCRIPT ftgitstat
+			git commit -m "$COMMIT_MESSAGE"
+			git push
+		fi
+		;;
+	*)
+		echo "didnt find command: $COMMAND_NAME"
+		;;
+esac
+
+
