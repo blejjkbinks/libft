@@ -53,19 +53,17 @@ case "$COMMAND_NAME" in
 		else
 			echo "symlinks already exist"
 		fi
-		if [[ "$0" != "$BASH_SOURCE" ]]; then
-			if [[ ":$PATH:" != *":$COMMANDS_DIR:"* ]]; then
+		if [[ ":$PATH:" == *":$COMMANDS_DIR:"* ]]; then
+			echo "symlinks already in path"
+		else
+			if [[ "$0" != "$BASH_SOURCE" ]]; then
 				export PATH="$PATH:$COMMANDS_DIR"
 				echo "PATH updated"
+				return 0
 			else
-				echo "symlinks already in PATH"
+				echo "run 'source ftscript' to add them to your PATH"
+				exit 0
 			fi
-			return 0
-		fi
-		if [[ ":$PATH:" != *":$COMMANDS_DIR:"* ]]; then
-			echo "run 'source ftscript' to add them to your PATH"
-		else
-			echo "symlinks already in PATH"
 		fi
 		exit 0
 		;;	#setup
