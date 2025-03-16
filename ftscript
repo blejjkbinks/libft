@@ -72,7 +72,7 @@ case "$COMMAND_NAME" in
 		;;	#ftscript_rmlinks
 	"ftcleandsstore")
 		echo "removing DS_Store"
-		find "$REAL_DIR" -name '.DS_Store' -type f -delete
+		find . -maxdepth 5 -name '.DS_Store' -type f ! -path "$HOME/Desktop/.DS_Store" -delete
 		;;	#ftcleandsstore
 	"ftcountfiles")
 		make -C "$REAL_DIR"		#re
