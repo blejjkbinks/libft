@@ -62,7 +62,6 @@ case "$COMMAND_NAME" in
 				return 0
 			else
 				echo "run 'source ftscript' to add them to your PATH"
-				exit 0
 			fi
 		fi
 		exit 0
@@ -70,15 +69,15 @@ case "$COMMAND_NAME" in
 	"ftscript_rmlinks")
 		echo "removing symlinks"
 		rm -rf "$COMMANDS_DIR"
-		;;	#ftclean_links
+		;;	#ftscript_rmlinks
 	"ftcleandsstore")
 		echo "removing DS_Store"
-		find . -name '.DS_Store' -type f -delete
-		;;	#ftclean_dsstore
+		find "$REAL_DIR" -name '.DS_Store' -type f -delete
+		;;	#ftcleandsstore
 	"ftcountfiles")
-		make re
+		make -C "$REAL_DIR"		#re
 		if [[ $? -ne 0 ]]; then
-			echo no makefile
+			echo "no makefile/compile failed"
 			exit 1
 		fi
 		norminette -v > /dev/null
@@ -86,10 +85,10 @@ case "$COMMAND_NAME" in
 			echo "norminette not installed"
 		else
 			printf "norminette KOs: "
-			norminette "$REAL_PATH" | grep Error! | wc -l
-			norminette "$REAL_PATH" > /dev/null		#norminette max depth
+			norminette "$REAL_DIR" | grep Error! | wc -l
+			norminette "$REAL_DIR" > /dev/null
 			if [[ $? -ne 0 ]]; then
-				norminette "$REAL_PATH" | grep Error!
+				norminette -o "$REAL_DIR" | grep Error!
 			fi
 		fi
 		tree / -L 1 > /dev/null
@@ -97,11 +96,11 @@ case "$COMMAND_NAME" in
 			echo "tree not installed"
 		else
 			printf "src: "
-			tree src* | grep files
+			tree "$REAL_DIR/src" | grep files
 			printf "obj: "
-			tree obj* | grep files
+			tree "$REAL_DIR/obj" | grep files
 		fi
-		make fclean
+		make -C "$REAL_DIR" fclean
 		;;	#ftcountfiles
 	"ftgitstat")
 		$REAL_SCRIPT ftcleandsstore
@@ -131,7 +130,12 @@ case "$COMMAND_NAME" in
 		;;	#ftsourcetxt
 	*)
 		echo "didnt find command: $COMMAND_NAME"
+		exit 2
 		;;
 esac
 
+exit 0
+
 #countfiles and sourcetxt can work in any project, find a way to list *.c and *.o
+#they cannot, it makes no sense, they are useless, only for libft
+#gitpush and gitstat DO work anywhere
