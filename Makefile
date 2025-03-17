@@ -29,7 +29,7 @@ RM := rm -rf
 MKD := mkdir -p
 CATS := CHR FUN LIST MEM NBR SPLIT STR WRT
 
-MAKEFLAGS += --no-print-directory
+MAKEFLAGS += --no-print-directory -s
 
 SRC_CHR := \
 	isalnum		isalpha		isalpha_lower		isalpha_upper \
