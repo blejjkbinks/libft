@@ -24,3 +24,37 @@
 - stress test for printf, random, split
 - makefile too heavy, create test folder with txt
 - `ft_numcmp(void *a, void *b)` and `lst_sort` family
+
+## classic libc inspiration
+
+look through open source code, add and modify for needs
+
+write better doc, descriptions, lists
+
+headache everytime i have to change/check something, how to make easier??
+
+### mem
+- chr, cmp, cpy, move, set, bzero, calloc
+- malloc, free
+- realloc_str, swap, dup, join
+
+### str
+- len, nlen, lcpy, lcat, chr, rchr, cmp, ncmp, nstr
+- join, dup
+- strtrim, substr
+- ndup, strsep, strprefix, strspn, strcspn, strtok, strpbrk, count, rev, replace
+
+### split
+- split, split_set, split_free, split_len, isquoted, split_quotes
+- splittrim_quotes, strtrim_quotes, isquoted_closed
+
+### nbr
+- atoi, itoa, itoa_base and REVIEW
+- math stuff
+
+### write
+- sprintf, fprintf, REVIEW printf
+
+### other stuff
+- strerror, basename, dirname, env_get, env_set
+- isdigit_base
