@@ -126,15 +126,23 @@ case "$COMMAND_NAME" in
 		fi
 		;;	#ftgitpush
 	"ftsourcetxt")
-		echo source txt
+		SOURCE_TXT="libft_source.txt"
+		> "$SOURCE_TXT"
+		find "$REAL_DIR" -maxdepth 5 -type f -name "*.c" | while read -r file; do
+			echo "start $(basename "$file")" >> "$SOURCE_TXT"
+			tail -n +14 "$file" >> "$SOURCE_TXT"
+			echo >> "$SOURCE_TXT"
+			echo "end $(basename "$file")" >> "$SOURCE_TXT"
+			echo "---" >> "$SOURCE_TXT"
+		done
+		mv "$SOURCE_TXT" "$HOME/Desktop/$SOURCE_TXT"
+		echo "ok $SOURCE_TXT is on your desktop"
 		;;	#ftsourcetxt
 	*)
 		echo "didnt find command: $COMMAND_NAME"
 		exit 2
 		;;
 esac
-
-exit 0
 
 #countfiles and sourcetxt can work in any project, find a way to list *.c and *.o
 #they cannot, it makes no sense, they are useless, only for libft

@@ -98,21 +98,10 @@ clean: testclean
 
 fclean: clean
 	@$(RM) $(NAME)
+	@./ftscript ftscript_rmlinks
 	@echo "libft fcleaning"
 
 re: fclean all
-
-## funny rules  ##
-
-SOURCETXT := libft_source.txt
-sourcetxt:
-	@> $(SOURCETXT)
-	@for file in $(SRC); do \
-		echo $$file >> $(SOURCETXT); \
-		tail -n +14 $$file >> $(SOURCETXT); \
-	done
-	@mv $(SOURCETXT) ~/Desktop/$(SOURCETXT)
-	@echo ok its on your desktop
 
 ## test rules  ##
 
