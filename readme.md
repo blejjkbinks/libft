@@ -58,3 +58,10 @@ headache everytime i have to change/check something, how to make easier??
 ### other stuff
 - strerror, basename, dirname, env_get, env_set
 - isdigit_base
+
+# haha
+resume
+something with chess
+somethin gwith rubik
+polish libft
+polish minishell with nice libft
