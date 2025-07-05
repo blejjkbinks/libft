@@ -1,149 +1,200 @@
 #!/bin/bash
 
-REAL_DIR="$(dirname "$(realpath "$0")")"
-REAL_SCRIPT="$REAL_DIR/ftscript"
-COMMANDS_DIR="$REAL_DIR/.ftscript_links"
-COMMANDS_LIST=( "ftscript_rmlinks" \
-				"ftcleandsstore" \
-				"ftcountfiles" \
-				"ftgitstat" \
-				"ftgitpush" \
-				"ftsourcetxt")
+# ==============================================
+# FTScript - Complete Function Toolkit
+# ==============================================
 
-if [[ $# -eq 0 ]]; then
-	if [[ "$(basename "$0")" == "ftscript" ]]; then
-		COMMAND_NAME="setup"
-	else
-		COMMAND_NAME=$(basename "$0")
-	fi
-elif [[ $# -eq 1 && "$(basename "$0")" == "ftscript" ]]; then
-	COMMAND_NAME="$1"
+# --- Configuration ---
+SCRIPT_NAME="ftscript"
+DEBUG=false  # Set to 'true' for debug output
+
+# Absolute paths (safe for execution from anywhere)
+SCRIPT_DIR=$(cd "$(dirname "$(realpath "$BASH_SOURCE" 2>/dev/null || realpath "$0")")" &>/dev/null && pwd)
+SYMLINK_DIR="${SCRIPT_DIR}/.ftscript_links"
+MAKEFILE="${SCRIPT_DIR}/Makefile"
+
+# Command list (without 'ft' prefix)
+COMMANDS=(
+  "cleandsstore"
+  "countfiles"
+  "gitstat"
+  "gitpush"
+  "sourcetxt"
+  "rmlinks"
+)
+
+# --- Debug Utility ---
+debug() {
+  [[ "$DEBUG" == true ]] && echo -e "[DEBUG] $1" >&2
+}
+
+# --- Path Validation ---
+validate_paths() {
+  if [[ ! -d "$SCRIPT_DIR" ]]; then
+    echo "ERROR: Cannot determine script location" >&2
+    return 1
+  fi
+  debug "Script directory: $SCRIPT_DIR"
+}
+
+# --- Core Setup ---
+setup_symlinks() {
+  validate_paths || return 1
+
+  # Create symlink directory if needed
+  if [[ ! -d "$SYMLINK_DIR" ]]; then
+    if ! mkdir -p "$SYMLINK_DIR"; then
+      echo "ERROR: Failed to create symlink directory" >&2
+      return 1
+    fi
+    debug "Created symlink dir: $SYMLINK_DIR"
+  fi
+
+  # Create symlinks for all commands
+  for cmd in "${COMMANDS[@]}"; do
+    local target="${SYMLINK_DIR}/ft${cmd}"
+    if [[ ! -e "$target" ]]; then
+      if ! ln -sf "${SCRIPT_DIR}/$(basename "$0")" "$target"; then
+        echo "ERROR: Failed to create symlink for ft${cmd}" >&2
+        return 1
+      fi
+      debug "Created symlink: $target"
+    fi
+  done
+
+  echo -e "\n✅ Symlinks ready in: ${SYMLINK_DIR/"$HOME"/~}"
+  if [[ ":$PATH:" != *":$SYMLINK_DIR:"* ]]; then
+    echo -e "To use commands, run:\n  source $(realpath "$0")"
+  fi
+}
+
+# --- Command Implementations ---
+
+# 1. Clean .DS_Store files
+ft_cleandsstore() {
+  echo -e "\n🧹 Cleaning .DS_Store files..."
+  find . -maxdepth 5 -name '.DS_Store' -type f ! -path "$HOME/Desktop/.DS_Store" -delete
+  echo "✅ Removed .DS_Store files"
+}
+
+# 2. Count project files
+ft_countfiles() {
+  echo -e "\n📊 Project File Count:"
+  
+  # C files
+  local c_files=$(find . -maxdepth 3 -name '*.c' | wc -l)
+  echo "  C Files: $c_files"
+  
+  # Header files
+  local h_files=$(find . -maxdepth 3 -name '*.h' | wc -l)
+  echo "  Header Files: $h_files"
+  
+  # Total lines of code (if cloc is available)
+  if command -v cloc &>/dev/null; then
+    echo -e "\n📝 Lines of Code:"
+    cloc . --quiet --progress-rate=0 | grep -E '^(Language|C$)'
+  else
+    echo -e "\nℹ️ Install 'cloc' for detailed code analysis"
+  fi
+}
+
+# 3. Git status
+ft_gitstat() {
+  echo -e "\n🔍 Git Status:"
+  if git rev-parse --is-inside-work-tree &>/dev/null; then
+    git status -sb
+    echo -e "\n📦 Branches:"
+    git branch -vv
+  else
+    echo "❌ Not a git repository"
+    return 1
+  fi
+}
+
+# 4. Git push
+ft_gitpush() {
+  ft_gitstat || return 1
+  
+  read -r -p "📝 Commit message (or 'cancel'): " commit_msg
+  [[ "$commit_msg" == "cancel" ]] && return
+  
+  commit_msg="${commit_msg:-Autocommit $(date +'%Y-%m-%d %H:%M')}"
+  
+  echo -e "\n🚀 Pushing changes..."
+  git add . && \
+  git commit -m "$commit_msg" && \
+  git push
+}
+
+# 5. Generate source text
+ft_sourcetxt() {
+  local output="${HOME}/Desktop/libft_source.txt"
+  echo -e "\n📄 Generating source text..."
+  
+  {
+    echo "=== LIBFT SOURCE TEXT ==="
+    echo "Generated: $(date)"
+    echo "========================="
+    echo ""
+    
+    find . -name '*.c' -exec sh -c '
+      echo "╔════════════════════════════════════╗"
+      echo "║ FILE: {}"
+      echo "╚════════════════════════════════════╝"
+      echo ""
+      tail -n +15 "{}" | sed "/^\/\//d"
+      echo ""
+      echo "══════════════════════════════════════"
+      echo ""
+    ' \;
+  } > "$output"
+  
+  echo "✅ Source text saved to: ${output/"$HOME"/~}"
+}
+
+# 6. Remove symlinks
+ft_rmlinks() {
+  if [[ -d "$SYMLINK_DIR" ]]; then
+    rm -rf "$SYMLINK_DIR"
+    echo -e "\n🗑️ Removed symlink directory: ${SYMLINK_DIR/"$HOME"/~}"
+  else
+    echo -e "\nℹ️ Symlink directory not found"
+  fi
+}
+
+# --- Main Dispatcher ---
+main() {
+  local command_name="${1#ft}"  # Strip 'ft' prefix if present
+
+  # Setup mode if no args
+  if [[ $# -eq 0 ]]; then
+    setup_symlinks
+    return $?
+  fi
+
+  # Validate command exists
+  if ! [[ " ${COMMANDS[*]} " =~ " ${command_name} " ]]; then
+    echo -e "\n❌ Invalid command. Available:"
+    for cmd in "${COMMANDS[@]}"; do
+      echo "  ft${cmd}"
+    done
+    return 1
+  fi
+
+  # Execute the command
+  "ft_${command_name}" "${@:2}"
+}
+
+# --- Runtime Handler ---
+if [[ "$0" == "$BASH_SOURCE" ]]; then
+  # Direct execution
+  main "$@"
 else
-	COMMAND_NAME="wrong arguments"
+  # Being sourced - add to PATH
+  if [[ -d "$SYMLINK_DIR" ]]; then
+    export PATH="${PATH}:${SYMLINK_DIR}"
+    echo -e "🔗 Added to PATH: ${SYMLINK_DIR/"$HOME"/~}"
+  else
+    echo -e "⚠️  Run './ftscript' first to create symlinks"
+  fi
 fi
-
-## debug ##
-if [[ "N" == "Y" ]]; then
-
-echo debugging
-echo 0: $0
-echo 1: $1
-echo all: $*
-echo bashsource: "$BASH_SOURCE"
-echo '#':$#
-echo "command name: " "$COMMAND_NAME"
-
-if [[ "$0" != "$BASH_SOURCE" ]]; then
-	return 1
-else
-	exit 1
-fi
-
-fi
-## end debug ##
-
-case "$COMMAND_NAME" in
-	"setup")
-		if [ ! -d "$COMMANDS_DIR" ]; then
-			mkdir -p "$COMMANDS_DIR"
-			for COMMAND in "${COMMANDS_LIST[@]}"; do
-				ln -sf $(realpath "$0") "$COMMANDS_DIR/$COMMAND"
-			done
-			echo "created symlinks: ${COMMANDS_LIST[*]}"
-		else
-			echo "symlinks already exist"
-		fi
-		if [[ ":$PATH:" == *":$COMMANDS_DIR:"* ]]; then
-			echo "symlinks already in path"
-		else
-			if [[ "$0" != "$BASH_SOURCE" ]]; then
-				export PATH="$PATH:$COMMANDS_DIR"
-				echo "PATH updated"
-				return 0
-			else
-				echo "run 'source ftscript' to add them to your PATH"
-			fi
-		fi
-		exit 0
-		;;	#setup
-	"ftscript_rmlinks")
-		echo "removing symlinks"
-		rm -rf "$COMMANDS_DIR"
-		;;	#ftscript_rmlinks
-	"ftcleandsstore")
-		echo "removing DS_Store"
-		find . -maxdepth 5 -name '.DS_Store' -type f ! -path "$HOME/Desktop/.DS_Store" -delete
-		;;	#ftcleandsstore
-	"ftcountfiles")
-		make -C "$REAL_DIR"		#re
-		if [[ $? -ne 0 ]]; then
-			echo "no makefile/compile failed"
-			exit 1
-		fi
-		norminette -v > /dev/null
-		if [[ $? -ne 0 ]]; then
-			echo "norminette not installed"
-		else
-			printf "norminette KOs: "
-			norminette "$REAL_DIR" | grep Error! | wc -l
-			norminette "$REAL_DIR" > /dev/null
-			if [[ $? -ne 0 ]]; then
-				norminette -o "$REAL_DIR" | grep Error!
-			fi
-		fi
-		tree / -L 1 > /dev/null
-		if [[ $? -ne 0 ]]; then
-			echo "tree not installed"
-		else
-			printf "src: "
-			tree "$REAL_DIR/src" | grep files
-			printf "obj: "
-			tree "$REAL_DIR/obj" | grep files
-		fi
-		make -C "$REAL_DIR" fclean
-		;;	#ftcountfiles
-	"ftgitstat")
-		$REAL_SCRIPT ftcleandsstore
-		git status -s -b
-		;;	#ftgitstat
-	"ftgitpush")
-		$REAL_SCRIPT ftgitstat
-		if [[ $? -ne 0 ]]; then
-			echo "not a git repo"
-			exit 1
-		fi
-		git branch
-		echo "commit message??"
-		read COMMIT_MESSAGE
-		if [[ $COMMIT_MESSAGE != "cancel" ]]; then
-			if [[ -z "$COMMIT_MESSAGE" ]]; then
-				COMMIT_MESSAGE="ftscript $(date +"%d/%m %H:%M")"
-			fi
-			git add .
-			git status
-			git commit -m "$COMMIT_MESSAGE"
-			git push
-		fi
-		;;	#ftgitpush
-	"ftsourcetxt")
-		SOURCE_TXT="libft_source.txt"
-		> "$SOURCE_TXT"
-		find "$REAL_DIR" -maxdepth 5 -type f -name "*.c" | while read -r file; do
-			echo "start $(basename "$file")" >> "$SOURCE_TXT"
-			tail -n +14 "$file" >> "$SOURCE_TXT"
-			echo >> "$SOURCE_TXT"
-			echo "end $(basename "$file")" >> "$SOURCE_TXT"
-			echo "---" >> "$SOURCE_TXT"
-		done
-		mv "$SOURCE_TXT" "$HOME/Desktop/$SOURCE_TXT"
-		echo "ok $SOURCE_TXT is on your desktop"
-		;;	#ftsourcetxt
-	*)
-		echo "didnt find command: $COMMAND_NAME"
-		exit 2
-		;;
-esac
-
-#countfiles and sourcetxt can work in any project, find a way to list *.c and *.o
-#they cannot, it makes no sense, they are useless, only for libft
-#gitpush and gitstat DO work anywhere
