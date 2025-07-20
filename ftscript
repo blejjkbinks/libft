@@ -1,146 +1,150 @@
 #!/bin/bash
 
-ftscript_main() {
+_ftscript_internal() {
+
+	# --- Functions ---
+
+	_ftscript_test() {
+		echo in test function
+	}
+
+	_ftscript_build() {
+		echo in build function
+	}
+
+	_ftscript_clean() {
+		echo in clean function
+	}
+
+	# --- Helpers ---
+	_debug() { [[ "$DEBUG" == true ]] && echo "[DEBUG] $1" >&2; }
+	_inform() { [[ "$VERBOSE" == true ]] && echo "[INFO] $1" >&2; }
+
+	# --- Constants ---
 	readonly MAIN_SCRIPT_NAME="ftscript"
-	readonly SCRIPT_DIR=$(cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")" && pwd)
+	readonly SCRIPT_DIR=$(dirname "$_SCRIPT_RESOLVED_PATH")
 	readonly SYMLINK_SUBDIR=".ftscript_links"
 	readonly COMMAND_DIR="${SCRIPT_DIR}/${SYMLINK_SUBDIR}"
-
-	DEBUG=false
-	VERBOSE=false
-	ARGS=()
-
+	readonly INVOKED_AS="$(basename "$0")"
 	readonly VALID_COMMANDS=("test" "build" "clean")
 
-	ftscript_test() {
-		inform "Starting test procedure"
-		debug "Test environment checks"
-		echo "Running test suite"
-	}
+	# --- State ---
+	local DEBUG=false
+	local VERBOSE=false
+	local IS_SOURCED=false
+	local IS_SCRIPT_IN_PATH=false
+	local IS_SYMLINKDIR_CREATED=false
+	local ARGS=()
 
-	ftscript_build() {
-		inform "Initializing build"
-		debug "Build parameters: ${ARGS[*]:1}"
-		echo "Building project"
-	}
+	# --- Detect sourcing ---
+	if [[ "$0" != "$BASH_SOURCE" ]]; then
+		IS_SOURCED=true
+	fi
 
-	ftscript_clean() {
-		inform "Beginning cleanup"
-		debug "Clean target: $PWD"
-		echo "Cleaning build artifacts"
-	}
+	# --- Check if symlink dir exists and is in PATH ---
+	if [[ -d "$COMMAND_DIR" ]]; then
+		IS_SYMLINKDIR_CREATED=true
+		[[ ":$PATH:" == *":$COMMAND_DIR:"* ]] && IS_SCRIPT_IN_PATH=true
+	fi
 
-	debug() {
-		[[ "$DEBUG" == true ]] && echo "[DEBUG] $1" >&2
-	}
+	# --- Arg parsing ---
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+			--debug) DEBUG=true ;;
+			--verbose) VERBOSE=true ;;
+			-*) echo "Warning: Unknown option '$1'" >&2 ;;
+			*) ARGS+=("$1") ;;
+		esac
+		shift
+	done
 
-	inform() {
-		[[ "$VERBOSE" == true ]] && echo "[INFO] $1" >&2
-	}
-
-	is_valid_command() {
-		[[ " ${VALID_COMMANDS[*]} " =~ " $1 " ]]
-	}
-	check_symlink_status() {
-		if [[ ! -d "$COMMAND_DIR" ]]; then
-			inform "Command links directory missing"
-			echo "Notice: Run './${MAIN_SCRIPT_NAME}' to create symlinks" >&2
-		elif [[ ":$PATH:" != *":$COMMAND_DIR:"* ]]; then
-			inform "Symlinks not in PATH"
-			echo "Notice: Run 'source ${MAIN_SCRIPT_NAME}' to enable commands" >&2
+	# --- If sourced: export path ---
+	if [[ "$IS_SOURCED" == true ]]; then
+		if [[ "$IS_SYMLINKDIR_CREATED" != true ]]; then
+			echo "Command links not yet set up" >&2
 		fi
-	}
+		if [[ "$IS_SCRIPT_IN_PATH" != true ]]; then
+			export PATH="${PATH}:${COMMAND_DIR}"
+			echo "Command links now available" >&2
+		else
+			echo "Command directory already in PATH" >&2
+		fi
+		if [[ "$IS_SYMLINKDIR_CREATED" == true ]]; then
+			return 0
+		else
+			return 3
+		fi
+	fi
 
-	setup_command_links() {
+	# --- Create symlinks if invoked as main script without args ---
+	if [[ "$INVOKED_AS" == "$MAIN_SCRIPT_NAME" && ${#ARGS[@]} -eq 0 ]]; then
 		mkdir -p "$COMMAND_DIR" || {
-			echo "Error: Failed to create directory '$COMMAND_DIR'" >&2
-			return 1
+			echo "Error: Failed to create '$COMMAND_DIR'" >&2
+			return 4
 		}
+		IS_SYMLINKDIR_CREATED=true
 
-		local created=0 exists=0
+		local created=0 exists=0 cmd
 		for cmd in "${VALID_COMMANDS[@]}"; do
 			local link="${COMMAND_DIR}/ft${cmd}"
 			if [[ -e "$link" ]]; then
 				((exists++))
-				debug "Symlink exists: ft${cmd}"
+				_debug "Symlink already exists: ft${cmd}"
 			else
 				ln -sf "${SCRIPT_DIR}/${MAIN_SCRIPT_NAME}" "$link" && ((created++))
-				inform "Created symlink: ft${cmd}"
+				_inform "Created symlink: ft${cmd}"
 			fi
 		done
 
 		(( created > 0 )) && echo "Created ${created} new symlinks"
 		(( exists == ${#VALID_COMMANDS[@]} )) && echo "All symlinks already exist"
 
-		check_symlink_status
+		if [[ ":$PATH:" != *":$COMMAND_DIR:"* ]]; then
+			echo "Run 'source ${MAIN_SCRIPT_NAME}' to enable command links" >&2
+		fi
 		return 0
-	}
+	fi
 
-	dispatch_command() {
-		local invoked_as
-		invoked_as="$(basename "$0")"
-		local command_name
+	# --- Dispatch ---
+	local command_name
 
-		debug "Invoked as: $invoked_as with args: ${ARGS[*]}"
+	_debug "Invoked as: $INVOKED_AS with args: ${ARGS[*]}"
 
-		if [[ "$invoked_as" == "$MAIN_SCRIPT_NAME" ]]; then
-			[[ ${#ARGS[@]} -eq 0 ]] && {
-				setup_command_links
-				return $?
-			}
-			command_name="${ARGS[0]}"
-		else
-			command_name="${invoked_as#ft}"
+	if [[ "$INVOKED_AS" == "$MAIN_SCRIPT_NAME" ]]; then
+		command_name="${ARGS[0]}"
+	else
+		command_name="${INVOKED_AS#ft}"
+	fi
+
+	# --- Validate ---
+	for cmd in "${VALID_COMMANDS[@]}"; do
+		if [[ "$cmd" == "$command_name" ]]; then
+			_inform "Running: $command_name"
+			_debug "Args: ${ARGS[*]:1}"
+
+			case "$command_name" in
+				test) _ftscript_test "${ARGS[@]:1}" ;;
+				build) _ftscript_build "${ARGS[@]:1}" ;;
+				clean) _ftscript_clean "${ARGS[@]:1}" ;;
+				*) return 1 ;;
+			esac
 		fi
-
-		if is_valid_command "$command_name"; then
-			inform "Executing: $command_name"
-			debug "Command args: ${ARGS[@]:1}"
-			"ftscript_${command_name}" "${ARGS[@]:1}"
-		else
-			echo "Error: Invalid command '$command_name'" >&2
-			echo "Available: ${VALID_COMMANDS[*]/#/ft}" | sed 's/ /, /g' >&2
-			return 1
-		fi
-	}
-
-	while [[ $# -gt 0 ]]; do
-		case "$1" in
-			--debug)
-				DEBUG=true
-				shift
-				;;
-			--verbose)
-				VERBOSE=true
-				shift
-				;;
-			-*)
-				echo "Warning: Unknown option '$1'" >&2
-				shift
-				;;
-			*)
-				ARGS+=("$1")
-				shift
-				;;
-		esac
 	done
 
-	dispatch_command || exit $?
+	# --- Invalid command fallback ---
+	echo "Error: Invalid command '$command_name'" >&2
+	echo "Available commands: ${VALID_COMMANDS[*]/#/ft}" | sed 's/ /, /g' >&2
+	return 1
 }
 
+# --- Entrypoint ---
+_SCRIPT_RESOLVED_PATH=$(realpath "${BASH_SOURCE[0]:-$0}" 2>/dev/null) || {
+	echo "Error: Could not resolve script path" >&2
+	exit 1
+}
+_ftscript_internal "$@"
 
-if [[ "$0" == "$BASH_SOURCE" ]]; then
-	ftscript_main "$@"
-else
-	if [[ -d "$COMMAND_DIR" ]]; then
-		if [[ ":$PATH:" != *":$COMMAND_DIR:"* ]]; then
-			export PATH="${PATH}:${COMMAND_DIR}"
-			echo "Command links now available" >&2
-		else
-			echo "Command directory already in PATH" >&2
-		fi
-	else
-		echo "Notice: Command links not set up" >&2
-		return 1
-	fi
-fi
+status=$?
+[[ "$0" != "$BASH_SOURCE" ]] && return $status || exit $status
+
+return $?
