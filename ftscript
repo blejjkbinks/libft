@@ -3,7 +3,6 @@
 _ftscript_internal() {
 
 	# --- Functions ---
-
 	_ftscript_test() {
 		echo in test function
 	}
@@ -16,47 +15,80 @@ _ftscript_internal() {
 		echo in clean function
 	}
 
-	# --- Helpers ---
-	_debug() { [[ "$DEBUG" == true ]] && echo "[DEBUG] $1" >&2; }
-	_inform() { [[ "$VERBOSE" == true ]] && echo "[INFO] $1" >&2; }
-
-	# --- Constants ---
-	readonly MAIN_SCRIPT_NAME="ftscript"
-	readonly SCRIPT_DIR=$(dirname "$_SCRIPT_RESOLVED_PATH")
-	readonly SYMLINK_SUBDIR=".ftscript_links"
-	readonly COMMAND_DIR="${SCRIPT_DIR}/${SYMLINK_SUBDIR}"
-	readonly INVOKED_AS="$(basename "$0")"
-	readonly VALID_COMMANDS=("test" "build" "clean")
-
 	# --- State ---
-	local DEBUG=false
-	local VERBOSE=false
+	local DEBUG=true
+	local VERBOSE=true
 	local IS_SOURCED=false
 	local IS_SCRIPT_IN_PATH=false
 	local IS_SYMLINKDIR_CREATED=false
 	local ARGS=()
 
-	# --- Detect sourcing ---
 	if [[ "$0" != "$BASH_SOURCE" ]]; then
 		IS_SOURCED=true
 	fi
 
-	# --- Check if symlink dir exists and is in PATH ---
 	if [[ -d "$COMMAND_DIR" ]]; then
 		IS_SYMLINKDIR_CREATED=true
 		[[ ":$PATH:" == *":$COMMAND_DIR:"* ]] && IS_SCRIPT_IN_PATH=true
 	fi
 
+	# --- Helpers ---
+	_debug() { [[ "$DEBUG" == true ]] && echo "[DEBUG] $1" >&2; }
+	_inform() { [[ "$VERBOSE" == true ]] && echo "[INFO] $1" >&2; }
+
+	# --- Constants ---
+	if command -v dirname >/dev/null 2>&1; then
+		SCRIPT_DIR="$(dirname "$_FTSCRIPT_RESOLVED_PATH")"
+	else
+		_SCRIPT_TMP="${_FTSCRIPT_RESOLVED_PATH%/*}"
+		[[ "$_SCRIPT_TMP" == "$_FTSCRIPT_RESOLVED_PATH" ]] && _SCRIPT_TMP="."
+		SCRIPT_DIR="$_SCRIPT_TMP"
+		unset _SCRIPT_TMP
+	fi
+
+	if [[ $IS_SOURCED == true ]]; then
+		if command -v basename >/dev/null 2>&1; then
+			INVOKED_AS="$(basename "$_FTSCRIPT_RESOLVED_PATH")"
+		else
+			INVOKED_AS="${_FTSCRIPT_RESOLVED_PATH##*/}"
+		fi
+	else
+		if command -v basename >/dev/null 2>&1; then
+			INVOKED_AS="$(basename "$0")"
+		else
+			INVOKED_AS="${0##*/}"
+		fi
+	fi
+
+	readonly MAIN_SCRIPT_NAME="ftscript"
+	readonly SYMLINK_SUBDIR=".ftscript_links"
+	COMMAND_DIR="${SCRIPT_DIR}/${SYMLINK_SUBDIR}"
+	readonly VALID_COMMANDS=("test" "build" "clean")
+
 	# --- Arg parsing ---
 	while [[ $# -gt 0 ]]; do
 		case "$1" in
-			--debug) DEBUG=true ;;
-			--verbose) VERBOSE=true ;;
+			--debug) DEBUG=true && _debug "debug set to true" ;;
+			--verbose) VERBOSE=true && _inform "verbose set to true" ;;
 			-*) echo "Warning: Unknown option '$1'" >&2 ;;
 			*) ARGS+=("$1") ;;
 		esac
 		shift
 	done
+
+	# --- Confused ---
+	_inform "---inform on"
+	_debug "---debug on"
+	_debug "---resolved path: $_FTSCRIPT_RESOLVED_PATH"
+	_debug "---argv0: $0"
+	_debug "---bashsource0: ${BASH_SOURCE[0]}"
+	_debug "---script dir: $SCRIPT_DIR"
+	_debug "---invoked as: $INVOKED_AS"
+	_debug "---command dir: $COMMAND_DIR"
+	_debug "---sourced: $IS_SOURCED"
+	_debug "---symlink dir created: $IS_SYMLINKDIR_CREATED"
+	_debug "---symlink in path: $IS_SCRIPT_IN_PATH"
+	_debug "---args: ${ARGS[*]}"
 
 	# --- If sourced: export path ---
 	if [[ "$IS_SOURCED" == true ]]; then
@@ -97,54 +129,69 @@ _ftscript_internal() {
 		done
 
 		(( created > 0 )) && echo "Created ${created} new symlinks"
+		(( exists > 0 )) && _inform "${exists} symlinks already existed"
 		(( exists == ${#VALID_COMMANDS[@]} )) && echo "All symlinks already exist"
 
 		if [[ ":$PATH:" != *":$COMMAND_DIR:"* ]]; then
-			echo "Run 'source ${MAIN_SCRIPT_NAME}' to enable command links" >&2
+			echo "Run 'source ${MAIN_SCRIPT_NAME}' to add them to your path" >&2
 		fi
 		return 0
 	fi
 
 	# --- Dispatch ---
-	local command_name
-
 	_debug "Invoked as: $INVOKED_AS with args: ${ARGS[*]}"
-
+	local command_name
 	if [[ "$INVOKED_AS" == "$MAIN_SCRIPT_NAME" ]]; then
 		command_name="${ARGS[0]}"
+		ARGS=("${ARGS[@]:1}")
 	else
 		command_name="${INVOKED_AS#ft}"
 	fi
 
-	# --- Validate ---
+	# --- Validate and Dispatch ---
+	local valid_command=false
 	for cmd in "${VALID_COMMANDS[@]}"; do
 		if [[ "$cmd" == "$command_name" ]]; then
-			_inform "Running: $command_name"
-			_debug "Args: ${ARGS[*]:1}"
-
-			case "$command_name" in
-				test) _ftscript_test "${ARGS[@]:1}" ;;
-				build) _ftscript_build "${ARGS[@]:1}" ;;
-				clean) _ftscript_clean "${ARGS[@]:1}" ;;
-				*) return 1 ;;
-			esac
+			valid_command=true
+			break
 		fi
 	done
 
-	# --- Invalid command fallback ---
-	echo "Error: Invalid command '$command_name'" >&2
-	echo "Available commands: ${VALID_COMMANDS[*]/#/ft}" | sed 's/ /, /g' >&2
-	return 1
+	if [[ "$valid_command" == true ]]; then
+		_inform "Running: $command_name"
+		_debug "Args: ${ARGS[*]}"
+
+	case "$command_name" in
+		test) _ftscript_test "${ARGS[@]}" ;;
+		build) _ftscript_build "${ARGS[@]}" ;;
+		clean) _ftscript_clean "${ARGS[@]}" ;;
+		*) return 1 ;;
+	esac
+		return $?
+	else
+		# --- Invalid command fallback ---
+		echo "Error: Invalid command '$command_name'" >&2
+		echo "Available commands: ${VALID_COMMANDS[*]}" | sed 's/ /, /g' >&2
+		echo "Run './ftscript com' or 'ftcom'" >&2
+		return 1
+	fi
 }
 
 # --- Entrypoint ---
-_SCRIPT_RESOLVED_PATH=$(realpath "${BASH_SOURCE[0]:-$0}" 2>/dev/null) || {
-	echo "Error: Could not resolve script path" >&2
-	exit 1
-}
+
+if command -v realpath >/dev/null 2>&1; then
+	_FTSCRIPT_RESOLVED_PATH=$(realpath "${BASH_SOURCE[0]:-$0}" 2>/dev/null)
+else
+	if [[ "${BASH_SOURCE[0]:-$0}" != /* ]]; then
+		_FTSCRIPT_RESOLVED_PATH="$PWD/${BASH_SOURCE[0]:-$0}"
+	else
+		_FTSCRIPT_RESOLVED_PATH="${BASH_SOURCE[0]:-$0}"
+	fi
+fi
+
 _ftscript_internal "$@"
 
-status=$?
-[[ "$0" != "$BASH_SOURCE" ]] && return $status || exit $status
+_FTSCIPT_EXIT_STATUS=$?
+[[ "$0" != "$BASH_SOURCE" ]] && return $_FTSCIPT_EXIT_STATUS || exit $_FTSCIPT_EXIT_STATUS
 
 return $?
