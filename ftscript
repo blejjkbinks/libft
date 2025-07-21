@@ -16,60 +16,33 @@ _ftscript_internal() {
   }
 
   # --- State ---
+  readonly VALID_COMMANDS=("test" "build" "clean")
   local DEBUG=true
   local VERBOSE=true
-  local IS_SOURCED=false
-  local IS_SCRIPT_IN_PATH=false
-  local IS_SYMLINKDIR_CREATED=false
   local ARGS=()
-
-  if [[ "$0" != "$BASH_SOURCE" ]]; then
-    IS_SOURCED=true
-  fi
-
-  if [[ -d "$COMMAND_DIR" ]]; then
-    IS_SYMLINKDIR_CREATED=true
-    [[ ":$PATH:" == *":$COMMAND_DIR:"* ]] && IS_SCRIPT_IN_PATH=true
-  fi
-
-  # --- Helpers ---
-  _debug() { [[ "$DEBUG" == true ]] && echo "[DEBUG] $1" >&2; }
-  _inform() { [[ "$VERBOSE" == true ]] && echo "[INFO] $1" >&2; }
-
-  # --- Constants ---
-  if command -v dirname >/dev/null 2>&1; then
-    SCRIPT_DIR="$(dirname "$_FTSCRIPT_RESOLVED_PATH")"
-  else
-    _SCRIPT_TMP="${_FTSCRIPT_RESOLVED_PATH%/*}"
-    [[ "$_SCRIPT_TMP" == "$_FTSCRIPT_RESOLVED_PATH" ]] && _SCRIPT_TMP="."
-    SCRIPT_DIR="$_SCRIPT_TMP"
-    unset _SCRIPT_TMP
-  fi
-
-  if [[ $IS_SOURCED == true ]]; then
-    if command -v basename >/dev/null 2>&1; then
-      INVOKED_AS="$(basename "$_FTSCRIPT_RESOLVED_PATH")"
-    else
-      INVOKED_AS="${_FTSCRIPT_RESOLVED_PATH##*/}"
-    fi
-  else
-    if command -v basename >/dev/null 2>&1; then
-      INVOKED_AS="$(basename "$0")"
-    else
-      INVOKED_AS="${0##*/}"
-    fi
-  fi
-
+  local SCRIPT_DIR="$(dirname "$_FTSCRIPT_RESOLVED_PATH" 2>/dev/null)"
+  #SCRIPT_DIR="${_FTSCRIPT_RESOLVED_PATH%/*}"
+  #[[ "$SCRIPT_DIR" == "$_FTSCRIPT_RESOLVED_PATH" ]] && SCRIPT_DIR="."
+  local INVOKED_AS="$(basename "$_FTSCRIPT_RESOLVED_PATH" 2>/dev/null)"
+  #INVOKED_AS="${_FTSCRIPT_RESOLVED_PATH##*/}"
   readonly MAIN_SCRIPT_NAME="ftscript"
   readonly SYMLINK_SUBDIR=".ftscript_links"
-  COMMAND_DIR="${SCRIPT_DIR}/${SYMLINK_SUBDIR}"
-  readonly VALID_COMMANDS=("test" "build" "clean")
+  local COMMAND_DIR="${SCRIPT_DIR}/${SYMLINK_SUBDIR}"
+  local IS_SOURCED=false
+  [[ "$0" != "$BASH_SOURCE" ]] && IS_SOURCE=true
+  local IS_SYMLINKDIR_CREATED=false
+  [[ -d "$COMMAND_DIR" ]] && IS_SYMLINKDIR_CREATED=true
+  local IS_SCRIPT_IN_PATH=false
+  [[ ":$PATH:" == *":$COMMAND_DIR:"* ]] && IS_SCRIPT_IN_PATH=true
+
+  _debug() { [[ "$DEBUG" == true ]] && echo "[DEBUG] $1" >&2; }
+  _inform() { [[ "$VERBOSE" == true ]] && echo "[INFO] $1" >&2; }
 
   # --- Arg parsing ---
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      --debug) DEBUG=true && _debug "debug set to true" ;;
-      --verbose) VERBOSE=true && _inform "verbose set to true" ;;
+      -d|--debug) DEBUG=true && _debug "debug set to true" ;;
+      -v|--verbose) VERBOSE=true && _inform "verbose set to true" ;;
       -*) echo "Warning: Unknown option '$1'" >&2 ;;
       *) ARGS+=("$1") ;;
     esac
@@ -179,19 +152,11 @@ _ftscript_internal() {
 
 # --- Entrypoint ---
 
-if command -v realpath >/dev/null 2>&1; then
-  _FTSCRIPT_RESOLVED_PATH=$(realpath "${BASH_SOURCE[0]:-$0}" 2>/dev/null)
-else
-  if [[ "${BASH_SOURCE[0]:-$0}" != /* ]]; then
-    _FTSCRIPT_RESOLVED_PATH="$PWD/${BASH_SOURCE[0]:-$0}"
-  else
-    _FTSCRIPT_RESOLVED_PATH="${BASH_SOURCE[0]:-$0}"
-  fi
-fi
+_FTSCRIPT_RESOLVED_PATH=$(realpath "${BASH_SOURCE[0]:-$0}" 2>/dev/null)
+#_FTSCRIPT_RESOLVED_PATH="${BASH_SOURCE[0]:-$0}"
+#[[ "${BASH_SOURCE[0]:-$0}" != /* ]] && _FTSCRIPT_RESOLVED_PATH="$PWD/${BASH_SOURCE[0]:-$0}"
 
 _ftscript_internal "$@"
 
 _FTSCIPT_EXIT_STATUS=$?
 [[ "$0" != "$BASH_SOURCE" ]] && return $_FTSCIPT_EXIT_STATUS || exit $_FTSCIPT_EXIT_STATUS
-
-return $?
