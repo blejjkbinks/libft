@@ -1,0 +1,236 @@
+#!/bin/bash
+
+_ftscript_internal() {
+
+  _ftscript_test() {
+    echo in test function
+  }
+
+  _ftscript_build() {
+    echo in build function
+  }
+
+  _ftscript_clean() {
+    echo in clean function
+  }
+
+  readonly VALID_COMMANDS=("test" "build" "clean")
+  local DEBUG=true
+  local VERBOSE=true
+  local ARGS=()
+  local SCRIPT_DIR="$(dirname "$_FTSCRIPT_RESOLVED_PATH" 2>/dev/null)"
+  #SCRIPT_DIR="${_FTSCRIPT_RESOLVED_PATH%/*}"
+  #[[ "$SCRIPT_DIR" == "$_FTSCRIPT_RESOLVED_PATH" ]] && SCRIPT_DIR="."
+  local INVOKED_AS="$(basename "$_FTSCRIPT_RESOLVED_PATH" 2>/dev/null)"
+  #INVOKED_AS="${_FTSCRIPT_RESOLVED_PATH##*/}"
+  readonly MAIN_SCRIPT_NAME="ftscript"
+  readonly SYMLINK_SUBDIR=".ftscript_links"
+  local COMMAND_DIR="${SCRIPT_DIR}/${SYMLINK_SUBDIR}"
+  local IS_SOURCED=false
+  [[ "$0" != "$BASH_SOURCE" ]] && IS_SOURCED=true
+  local IS_SYMLINKDIR_CREATED=false
+  [[ -d "$COMMAND_DIR" ]] && IS_SYMLINKDIR_CREATED=true
+  local IS_SCRIPT_IN_PATH=false
+  [[ ":$PATH:" == *":$COMMAND_DIR:"* ]] && IS_SCRIPT_IN_PATH=true
+
+  _debug() { [[ "$DEBUG" == true ]] && echo "[DEBUG] $1" >&2; }
+  _inform() { [[ "$VERBOSE" == true ]] && echo "[INFO] $1" >&2; }
+  _display_usage() {
+    echo "Available commands: ${VALID_COMMANDS[*]/,/, }" >&2
+    echo "Run './ftscript com' or 'ftcom'" >&2
+  }
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -d|--debug) DEBUG=true && _debug "debug set to true" ;;
+      -v|--verbose) VERBOSE=true && _inform "verbose set to true" ;;
+      -*) echo "Warning: Unknown option '$1'" >&2 ;;
+      *) ARGS+=("$1") ;;
+    esac
+    shift
+  done
+
+  # --- Confused ---
+  _inform "---inform on"
+  _debug "---debug on"
+  _debug "---resolved path: $_FTSCRIPT_RESOLVED_PATH"
+  _debug "---argv0: $0"
+  _debug "---bashsource0: ${BASH_SOURCE[0]}"
+  _debug "---script dir: $SCRIPT_DIR"
+  _debug "---invoked as: $INVOKED_AS"
+  _debug "---command dir: $COMMAND_DIR"
+  _debug "---sourced: $IS_SOURCED"
+  _debug "---symlink dir created: $IS_SYMLINKDIR_CREATED"
+  _debug "---symlink in path: $IS_SCRIPT_IN_PATH"
+  _debug "---args: ${ARGS[*]}"
+  # --- Enlightened ---
+
+#...vvv
+  _ftscript_internal() {
+  # ... [keep existing variable declarations and helper functions] ...
+
+  # --- Combined Initialization Logic ---
+  if [[ "$IS_SOURCED" == true || ("$INVOKED_AS" == "$MAIN_SCRIPT_NAME" && ${#ARGS[@]} -eq 0) ]]; then
+    # Ensure command directory exists
+    if [[ ! -d "$COMMAND_DIR" ]]; then
+      mkdir -p "$COMMAND_DIR" || {
+        echo "Error: Failed to create '$COMMAND_DIR'" >&2
+        return 4
+      }
+      IS_SYMLINKDIR_CREATED=true
+
+      # Create symlinks for all commands
+      local created=0 exists=0 cmd
+      for cmd in "${VALID_COMMANDS[@]}"; do
+        local link="${COMMAND_DIR}/ft${cmd}"
+        if [[ -e "$link" ]]; then
+          ((exists++))
+          _debug "Symlink already exists: ft${cmd}"
+        else
+          ln -sf "${SCRIPT_DIR}/${MAIN_SCRIPT_NAME}" "$link" && ((created++))
+          _inform "Created symlink: ft${cmd}"
+        fi
+      done
+      (( created > 0 )) && echo "Created ${created} new symlinks"
+    fi
+
+    # PATH handling for sourced case
+    if [[ "$IS_SOURCED" == true ]]; then
+      if [[ ":$PATH:" != *":$COMMAND_DIR:"* ]]; then
+        export PATH="$PATH:$COMMAND_DIR"
+        _inform "Temporarily added to PATH for this session"
+
+        # Check if permanently in any shell config
+        local config_files=("$HOME/.bashrc" "$HOME/.bash_profile" "$HOME/.zshrc")
+        local in_config=false
+        for config in "${config_files[@]}"; do
+          [[ -f "$config" ]] && grep -q "PATH=.*$COMMAND_DIR" "$config" && in_config=true
+        done
+
+        if ! $in_config; then
+          # Interactive prompt to add to config
+          echo -n "Add to shell config permanently? [y/N] "
+          read -r answer
+          if [[ "$answer" =~ ^[Yy] ]]; then
+            PS3="Select config file: "
+            select config_file in "${config_files[@]}" "Other"; do
+              [[ "$config_file" == "Other" ]] && read -rp "Enter path: " config_file
+              
+              # Safety checks
+              if [[ ! -e "$config_file" ]]; then
+                echo -n "File doesn't exist. Create? [y/N] "
+                read -r create_ans
+                [[ "$create_ans" =~ ^[Yy] ]] || continue
+                touch "$config_file" || {
+                  echo "Error: Failed to create config file" >&2
+                  return 1
+                }
+              fi
+
+              [[ -w "$config_file" ]] || {
+                echo "Error: File not writable" >&2
+                return 1
+              }
+
+              # Append to config
+              echo -e "\n# Added by $MAIN_SCRIPT_NAME\nexport PATH=\"\$PATH:$COMMAND_DIR\"" >> "$config_file"
+              echo "Added to $config_file - run 'source $config_file' to apply"
+              break
+            done
+          fi
+        fi
+      fi
+      return 0
+    fi
+
+    # Direct execution case
+    if [[ ":$PATH:" != *":$COMMAND_DIR:"* ]]; then
+      echo "Run 'source ${MAIN_SCRIPT_NAME}' to add commands to your PATH" >&2
+    fi
+    return 0
+  fi
+
+  # ... [keep existing command dispatch logic] ...
+}
+#...^^^
+
+  if [[ "$IS_SOURCED" == true ]]; then
+    if [[ "$IS_SCRIPT_IN_PATH" != true ]]; then
+      export PATH="${PATH}:${COMMAND_DIR}"
+      echo "Command links added to PATH" >&2
+    else
+      echo "Command links already in PATH" >&2
+    fi
+    if [[ "$IS_SYMLINKDIR_CREATED" == true ]]; then
+      return 0
+    fi
+  fi
+
+  if [[ ("$INVOKED_AS" == "$MAIN_SCRIPT_NAME" && ${#ARGS[@]} -eq 0) || 
+        ("$IS_SOURCED" == true) ]]; then
+    mkdir -p "$COMMAND_DIR" || { echo "Error: Failed to create '$COMMAND_DIR'" >&2; return 4; }
+    IS_SYMLINKDIR_CREATED=true
+
+    local created=0 exists=0 cmd
+    for cmd in "${VALID_COMMANDS[@]}"; do
+      local link="${COMMAND_DIR}/ft${cmd}"
+      if [[ -e "$link" ]]; then
+        ((exists++))
+        _debug "Symlink already exists: ft${cmd}"
+      else
+        ln -sf "${SCRIPT_DIR}/${MAIN_SCRIPT_NAME}" "$link" && ((created++))
+        _inform "Created symlink: ft${cmd}"
+      fi
+    done
+    (( created > 0 )) && echo "Created ${created} new symlinks"
+    (( exists > 0 )) && _inform "${exists} symlinks already existed"
+    (( exists == ${#VALID_COMMANDS[@]} )) && echo "All symlinks already exist"
+
+    if [[ "$IS_SCRIPT_IN_PATH" != true ]]; then
+      #bashrc stuff here
+      #need this if (!in_path || !in_bashrc)
+      #but how to check before selecting bashrc file???
+      #first time source should: add path + create symdir + prompt bashrc
+      echo "Add command directory to your shell config? [y/N]"
+      read -r answer
+      if [[ "$answer" =~ ^[Yy] ]]; then
+        echo "yay, path to your bashrc?"
+      else
+        echo "Skipped"
+      fi
+      echo "Run 'source ${MAIN_SCRIPT_NAME}' to add them to your path" >&2
+    else
+      _display_usage
+    fi
+    return 0
+  fi
+
+  _debug "Invoked as: $INVOKED_AS with args: ${ARGS[*]}"
+  local command_name
+  if [[ "$INVOKED_AS" == "$MAIN_SCRIPT_NAME" ]]; then
+    command_name="${ARGS[0]}"
+    ARGS=("${ARGS[@]:1}")
+  else
+    command_name="${INVOKED_AS#ft}"
+  fi
+  if [[ " ${VALID_COMMANDS[*]} " == *" $command_name "* ]]; then
+    _inform "Running: $command_name"
+    _debug "Args: ${ARGS[*]}"
+    "_ftscript_${command_name}" "${ARGS[@]}"
+    return $?
+  else
+    echo "Error: Invalid command '$command_name'" >&2
+    _display_usage
+    return 1
+  fi
+}
+
+_FTSCRIPT_RESOLVED_PATH=$(realpath "${BASH_SOURCE[0]:-$0}" 2>/dev/null)
+#if [[ -z _FTSCRIPT_RESOLVED_PATH ]]; then
+#_FTSCRIPT_RESOLVED_PATH="${BASH_SOURCE[0]:-$0}"
+#[[ "${BASH_SOURCE[0]:-$0}" != /* ]] && _FTSCRIPT_RESOLVED_PATH="$PWD/${BASH_SOURCE[0]:-$0}"
+
+_ftscript_internal "$@"
+
+_FTSCIPT_EXIT_STATUS=$?
+[[ "$0" != "$BASH_SOURCE" ]] && return $_FTSCIPT_EXIT_STATUS || exit $_FTSCIPT_EXIT_STATUS
