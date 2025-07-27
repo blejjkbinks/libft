@@ -152,7 +152,9 @@ if [[ "$is_inpath" != true ]]; then
   if [[ "$answer" =~ ^[Yy] ]]; then
     PS3="Select your config file: "
     select config_file in 'bashrc' 'bash_profile' 'zshrc' 'other'; do
-      [[ "$config_file" == 'other' ]] && read -rp "Enter your config file path: " config_file
+      if [[ -z "$config_file" || "$config_file" == 'other' ]]; then
+        read -rp "Enter your config file path: " config_file
+      fi
       [[ "$config_file" != .* ]] && config_file=".$config_file"
       [[ "$config_file" =~ ^~ ]] && config_file="${config_file/#\~/$HOME}"
       [[ "$config_file" != /* ]] && config_file="$HOME/$config_file"
