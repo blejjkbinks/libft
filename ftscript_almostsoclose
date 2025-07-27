@@ -168,7 +168,7 @@ _ftscript_internal() {
 
   if [[ ("$INVOKED_AS" == "$MAIN_SCRIPT_NAME" && ${#ARGS[@]} -eq 0) || 
         ("$IS_SOURCED" == true) ]]; then
-    mkdir -p "$COMMAND_DIR" || { echo "Error: Failed to create '$COMMAND_DIR'" >&2; return 4; }
+     -p "$COMMAND_DIR" || { echo "Error: Failed to create '$COMMAND_DIR'" >&2; return 4; }
     IS_SYMLINKDIR_CREATED=true
 
     local created=0 exists=0 cmd

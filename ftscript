@@ -2,14 +2,83 @@
 
 _ftscript_main() {
 
-local valid_commands=('test' 'test2')
+_ftscript_rmlinks() {
+  echo "Removing ftscript symlinks" >&2
+  rm -rf "$symlink_dir"
+}
+
+_ftscript_cleandsstore() {
+  echo "Removing .DS_Store"
+  find . -maxdepth 5 -name '.DS_Store' -type f ! -path "$HOME/Desktop/.DS_Store" -delete
+}
+
+_ftscript_countfiles() {
+  make -C .
+  [[ $? -ne 0 ]] && echo "No Makefile/compile failed" >&2 && return 1
+  if ! norminette -v > /dev/null 2>&1; then
+    echo "norminette not installed" >&2
+  else
+    echo "norminette KOs: "
+    norminette . | grep Error! | wc -l >&2
+    if ! norminette . > /dev/null 2>&1; then
+      norminette -o . | grep Error!
+    fi
+  fi
+  if ! tree / -L 1 >/dev/null 2>&1; then
+    echo "tree not installed" >&2
+  else
+    echo "src: "; tree "./src" | grep files
+    echo "obj: "; tree "./obj" | grep files
+  fi
+  make -C . fclean
+}
+
+_ftscript_gitstat() {
+  git status -s -b
+}
+
+_ftscript_gitpush() {
+  _ftscript_gitstat
+  [[ $? -ne 0 ]] && echo "not a git repo" >&2 && return 1
+  git branch
+  local msg
+  if [[ $# -eq 0 ]]; then
+    echo "commit message??: "
+    read msg
+  else
+    msg=$1
+  fi
+  if [[ "$msg" != "cancel" ]]; then
+    [[ -z "$msg" ]] && msg="ftscript $(date +"%d/%m %H:%M")"
+    git add .
+    git status
+    git commit -m "$msg"
+    git push
+  fi
+}
+
+_ftscript_sourcetxt() {
+  local srctxt="$(basename "$PWD")_source.txt"
+  showdebug "srctxt:$srctxt:"
+  > "$srctxt"
+  find . -maxdepth 5 -type f -name "*.c" | while read -r file; do
+    echo "start $(basename "$file")" >> "$srctxt"
+    tail -n +14 "$file" >> "$srctxt"
+    echo >> "$srctxt"
+    echo "end $(basename "$file")" >> "$srctxt"
+    echo "---" >> "$srctxt"
+  done
+  mv "$srctxt" "$HOME/Desktop/$srctxt"
+  echo "ok $srctxt is on your desktop"
+}
+
+local valid_commands=('rmlinks' 'cleandsstore' 'countfiles' 'gitstat' 'gitpush' 'sourcetxt')
 local execpath=$(realpath "$_FTSCRIPT_ZERO" 2>/dev/null)
 [[ -z execpath ]] && execpath="$_FTSCRIPT_ZERO" && showdebug "realpath failed"
 [[ "$execpath" != /* ]] && execpath="$PWD/$execpath"
 local script_dir="$(dirname "$execpath" 2>/dev/null)"
 [[ -z script_dir ]] && script_dir="${execpath%/*}" && showdebug "dirname failed"
-#[[ "$script_dir" == "$execpath" ]] && script_dir="."
-local invoked_as="$(basename "$execpath" 2>/dev/null)"
+local invoked_as="$(basename "$_FTSCRIPT_ZERO" 2>/dev/null)"
 [[ -z invoked_as ]] && invoked_as="${execpath##*/}" && showdebug "basename failed"
 local script_name="ftscript"
 local symlink_dir="${script_dir}/.ftscript_links"
@@ -21,8 +90,7 @@ local is_inpath=false
 [[ ":$PATH:" == *":$symlink_dir:"* ]] && is_inpath=true
 local symlink_created=()
 local symlink_existed=()
-#config, like is_inconfig, config_guesses, config_actual
-local isdebug=true
+local isdebug=false
 showdebug(){ [[ "$isdebug" == true ]] && echo "[DEBUG] $1" >&2;}
 local argv=()
 while [[ $# -gt 0 ]]; do
@@ -34,7 +102,9 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 local exec_command
-if [[ "$invoked_as" == "$script_name" ]]; then
+if [[ "$invoked_as" == "$script_name" && ${#argv[@]} -eq 0 ]]; then
+  exec_command="$script_name"
+elif [[ "$invoked_as" == "$script_name" ]]; then
   exec_command="${argv[0]}"
   argv=("${argv[@]:1}")
 else
@@ -43,8 +113,8 @@ fi
 local is_command_valid=false
 [[ " ${valid_commands[*]} " == *" $exec_command "* ]] && is_command_valid=true
 
-
-showdebug "zero:$_FTSCRIPT_ZERO:<$0><${BASH_SOURCE[0]}>"
+showdebug "zero:$_FTSCRIPT_ZERO:"
+showdebug "zzzz:<$0><${BASH_SOURCE[0]}>"
 showdebug "pwd:$PWD:"
 showdebug "execpath:$execpath:"
 showdebug "script_dir:$script_dir:"
@@ -55,14 +125,12 @@ showdebug "is_symlinkcreated:$is_symlinkcreated:"
 showdebug "is_inpath:$is_inpath:"
 showdebug "exec_command:$exec_command:"
 showdebug "is_command_valid:$is_command_valid:"
+showdebug "argv:${argv[*]}:"
 
+if [[ ("$exec_command" == "ftscript") || ("$is_sourced" == true) ]]; then
 
-if [[ ("$invoked_as" == "ftscript" && ${#argv[@]} -eq 0) || 
-      ("$is_sourced" == true) ]]; then
-#sourced or setup
-else
-#run command
-fi
+mkdir -p "$symlink_dir" || { echo "Error: failed to mkdir '$symlink_dir'" >&2; return 4; }
+is_symlinkcreated=true
 
 local comm link
 for comm in "${valid_commands[@]}"; do
@@ -70,20 +138,62 @@ for comm in "${valid_commands[@]}"; do
   if [[ -e "$link" ]]; then
     symlink_existed+=("$comm")
   else
-    #ln -sf "${script_dir}/${script_name}" "$link"
+    ln -sf "${script_dir}/${script_name}" "$link"
     symlink_created+=("$comm")
   fi
 done
 showdebug "existed: ${symlink_existed[*]}"
 showdebug "created: ${symlink_created[*]}"
+echo "Command links ready" >&2
+
+if [[ "$is_inpath" != true ]]; then
+  echo "Add to your shell config permanently? [y/n]" >&2
+  read -r answer
+  if [[ "$answer" =~ ^[Yy] ]]; then
+    PS3="Select your config file: "
+    select config_file in 'bashrc' 'bash_profile' 'zshrc' 'other'; do
+      [[ "$config_file" == 'other' ]] && read -rp "Enter your config file path: " config_file
+      [[ "$config_file" != .* ]] && config_file=".$config_file"
+      [[ "$config_file" =~ ^~ ]] && config_file="${config_file/#\~/$HOME}"
+      [[ "$config_file" != /* ]] && config_file="$HOME/$config_file"
+      showdebug "config_file:$config_file"
+      [[ ! -f "$config_file" ]] && touch "$config_file"
+      if ! grep -q "ftscript" "$config_file"; then
+        printf '\nexport PATH="$PATH:%s"\n' "$symlink_dir" >> "$config_file"
+        echo "Added to commands to your config, restart shell or run source" >&2
+      else
+        echo "Detected in config file already, double check please" >&2
+      fi
+      break
+    done
+  else
+    echo "Skipped adding to config" >&2
+  fi
+  if [[ "$is_sourced" == true ]]; then
+    export PATH="${PATH}:${symlink_dir}"
+    echo "Commands added to PATH for current session" >&2
+  else
+    echo "Run 'source ftscript' to add commands to the current session" >&2
+  fi
+else
+  echo "Commands already in PATH" >&2
+  echo "Run them as './ftscript com' or 'ftcom'"
+fi
+return 0
+elif [[ "$is_symlinkcreated" != true ]]; then
+  echo "Command links not yet set up, run './ftscript' or 'source ftscript' to create them" >&2
+fi
 
 if [[ "$is_command_valid" == true ]]; then
   showdebug "running >$exec_command< with args >${argv[*]}<"
+  "_ftscript_${exec_command}" "${argv[@]}"
+  return $?
 else
   showdebug "wrong command >$exec_command< with args >${argv[*]}<"
+  echo "Invalid command: $exec_command"
+  echo "Available commands are: ${valid_commands[@]}"
   return 1
 fi
-
 }
 
 _FTSCRIPT_ZERO="${BASH_SOURCE[0]:-$0}"

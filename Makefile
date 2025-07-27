@@ -83,6 +83,7 @@ OBJ := $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(SRC))
 all: $(NAME)
 
 $(OBJ_DIR):
+	@echo "libft making"
 	@$(MKD) $(foreach c, $(CATS), $@/$(call tolower,$(c)))
 
 $(OBJ): $(OBJ_DIR)%.o: $(SRC_DIR)%.c
@@ -98,8 +99,8 @@ clean: testclean
 
 fclean: clean
 	@$(RM) $(NAME)
-	@./ftscript ftscript_rmlinks
 	@echo "libft fcleaning"
+#	@-./ftscript rmlinks
 
 re: fclean all
 
