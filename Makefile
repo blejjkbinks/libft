@@ -104,6 +104,8 @@ fclean: clean
 
 re: fclean all
 
+bonus: all
+
 ## test rules  ##
 
 TEST_A := a.test
@@ -124,6 +126,4 @@ test: all $(TEST_C)
 	./$(TEST_A) | cat -e
 	@printf "###\n^^^^^\ndone :)\n"
 
-.PHONY: all clean fclean bonus \
-	test testclean countfiles \
-	gitstat gitpush sourcetxt
+.PHONY: all clean fclean bonus test
