@@ -57,6 +57,8 @@ _ftscript_gitpush() {
   fi
 }
 
+#modify to take $1 instead of '.'
+#modify to read all files instead of *.c, sorted
 _ftscript_sourcetxt() {
   local srctxt="$(basename "$PWD")_source.txt"
   showdebug "srctxt:$srctxt:"

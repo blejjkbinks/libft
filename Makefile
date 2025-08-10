@@ -100,6 +100,7 @@ clean: testclean
 fclean: clean
 	@$(RM) $(NAME)
 	@echo "libft fcleaning"
+	@$(MAKE) -C tests fclean
 #	@-./ftscript rmlinks
 
 re: fclean all
@@ -125,5 +126,8 @@ test: all $(TEST_C)
 	@echo "letsgo :)\nvvvvv"
 	./$(TEST_A) | cat -e
 	@printf "###\n^^^^^\ndone :)\n"
+
+tests: all
+	$(MAKE) -C tests test
 
 .PHONY: all clean fclean bonus test
