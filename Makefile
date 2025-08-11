@@ -101,7 +101,7 @@ fclean: clean
 	@$(RM) $(NAME)
 	@echo "libft fcleaning"
 	@$(MAKE) -C tests fclean
-#	@-./ftscript rmlinks
+	@-./ftscript.sh rmlinks
 
 re: fclean all
 

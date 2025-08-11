@@ -3,7 +3,7 @@
 _ftscript_main() {
 
 _ftscript_rmlinks() {
-  echo "Removing ftscript symlinks" >&2
+  echo "removing ftscript symlinks" >&2
   rm -rf "$symlink_dir"
 }
 
@@ -188,7 +188,7 @@ else
   echo "Run them as './ftscript com' or 'ftcom'"
 fi
 return 0
-elif [[ "$is_symlinkcreated" != true ]]; then
+elif [[ ("$is_symlinkcreated" != true) && ("$exec_command" != "rmlinks") ]]; then
   echo "Command links not yet set up, run './ftscript' or 'source ftscript' to create them" >&2
 fi
 
