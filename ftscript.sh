@@ -58,21 +58,20 @@ _ftscript_gitpush() {
 }
 
 _ftscript_sourcetxt() {
-  local srctxt="$(basename "$PWD")_source.txt"
-  local search_path="${1:-.}"
+  local search_path="${1:-$PWD}"
+  local srctxt="$(basename "$search_path")_source.txt"
   showdebug "srctxt:$srctxt: path:$search_path"
   > "$srctxt"
-  find . -maxdepth 5 -type f -name 2>/dev/null | while read -r file; do
+  find "$search_path" -maxdepth 5 -type f -name "*" 2>/dev/null | while read -r file; do
     if [[ -r "$file" ]]; then
-      echo "start $(basename "$file")" >> "$srctxt"
-      if [[ "$file" == *.c ]] && grep -q '^\s*/\* \*+' "$file"; then
+      echo "---start $(basename "$file")" >> "$srctxt"
+      if [[ "$file" == *.c ]] && head -n 1 "$file" | grep -qE '^\s*/\* \*+'; then
         tail -n +14 "$file" >> "$srctxt"
       else
         cat "$file" >> "$srctxt"
       fi
       echo >> "$srctxt"
-      echo "end $(basename "$file")" >> "$srctxt"
-      echo "---" >> "$srctxt"
+      echo "---end $(basename "$file")" >> "$srctxt"
     fi
   done
   mv "$srctxt" "$HOME/Desktop/$srctxt"
