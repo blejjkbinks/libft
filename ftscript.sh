@@ -63,7 +63,7 @@ _ftscript_sourcetxt() {
   showdebug "srctxt:$srctxt: path:$search_path"
   > "$srctxt"
   find "$search_path" -maxdepth 5 -type f -name "*" 2>/dev/null | while read -r file; do
-    if [[ -r "$file" ]]; then
+    if file "$file" | grep -q 'text'; then
       echo "---start $(basename "$file")" >> "$srctxt"
       if [[ "$file" == *.c ]] && head -n 1 "$file" | grep -qE '^\s*/\* \*+'; then
         tail -n +14 "$file" >> "$srctxt"
