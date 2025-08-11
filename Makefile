@@ -114,9 +114,7 @@ TEST_C := test.c
 TEST_T := .test.txt
 
 testclean:
-	@$(RM) $(TEST_C)
-	@$(RM) $(TEST_A)
-	@$(RM) $(TEST_A).dSYM
+	@$(RM) $(TEST_C) $(TEST_A) $(TEST_A).dSYM
 
 $(TEST_C):
 	cp $(TEST_T) $(TEST_C)
@@ -130,4 +128,4 @@ test: all $(TEST_C)
 tests: all
 	$(MAKE) -C tests test
 
-.PHONY: all clean fclean bonus test
+.PHONY: all clean fclean bonus test tests

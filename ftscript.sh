@@ -57,18 +57,23 @@ _ftscript_gitpush() {
   fi
 }
 
-#modify to take $1 instead of '.'
-#modify to read all files instead of *.c, sorted
 _ftscript_sourcetxt() {
   local srctxt="$(basename "$PWD")_source.txt"
-  showdebug "srctxt:$srctxt:"
+  local search_path="${1:-.}"
+  showdebug "srctxt:$srctxt: path:$search_path"
   > "$srctxt"
-  find . -maxdepth 5 -type f -name "*.c" | while read -r file; do
-    echo "start $(basename "$file")" >> "$srctxt"
-    tail -n +14 "$file" >> "$srctxt"
-    echo >> "$srctxt"
-    echo "end $(basename "$file")" >> "$srctxt"
-    echo "---" >> "$srctxt"
+  find . -maxdepth 5 -type f -name 2>/dev/null | while read -r file; do
+    if [[ -r "$file" ]]; then
+      echo "start $(basename "$file")" >> "$srctxt"
+      if [[ "$file" == *.c ]] && grep -q '^\s*/\* \*+' "$file"; then
+        tail -n +14 "$file" >> "$srctxt"
+      else
+        cat "$file" >> "$srctxt"
+      fi
+      echo >> "$srctxt"
+      echo "end $(basename "$file")" >> "$srctxt"
+      echo "---" >> "$srctxt"
+    fi
   done
   mv "$srctxt" "$HOME/Desktop/$srctxt"
   echo "ok $srctxt is on your desktop"
@@ -82,7 +87,7 @@ local script_dir="$(dirname "$execpath" 2>/dev/null)"
 [[ -z script_dir ]] && script_dir="${execpath%/*}" && showdebug "dirname failed"
 local invoked_as="$(basename "$_FTSCRIPT_ZERO" 2>/dev/null)"
 [[ -z invoked_as ]] && invoked_as="${execpath##*/}" && showdebug "basename failed"
-local script_name="ftscript"
+local script_name="ftscript.sh"
 local symlink_dir="${script_dir}/.ftscript_links"
 local is_sourced=false
 [[ "$0" != "$BASH_SOURCE" ]] && is_sourced=true
@@ -129,7 +134,7 @@ showdebug "exec_command:$exec_command:"
 showdebug "is_command_valid:$is_command_valid:"
 showdebug "argv:${argv[*]}:"
 
-if [[ ("$exec_command" == "ftscript") || ("$is_sourced" == true) ]]; then
+if [[ ("$exec_command" == "$script_name") || ("$is_sourced" == true) ]]; then
 
 mkdir -p "$symlink_dir" || { echo "Error: failed to mkdir '$symlink_dir'" >&2; return 4; }
 is_symlinkcreated=true
