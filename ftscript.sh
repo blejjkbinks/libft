@@ -30,7 +30,7 @@ _ftscript_countfiles() {
     echo "src: "; tree "./src" | grep files
     echo "obj: "; tree "./obj" | grep files
   fi
-  make -C . fclean
+  make --no-print-directory -C . fclean
 }
 
 _ftscript_gitstat() {
