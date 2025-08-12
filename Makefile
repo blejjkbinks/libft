@@ -6,7 +6,7 @@
 #    By: rdomange <romitdomange@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/24 14:35:21 by rdomange          #+#    #+#              #
-#    Updated: 2025/03/13 00:42:06 by rdomange         ###   ########.fr        #
+#    Updated: 2025/08/12 21:46:12 by rdomange         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -101,7 +101,7 @@ fclean: clean
 	@$(RM) $(NAME)
 	@echo "libft fcleaning"
 	@$(MAKE) -C tests fclean
-	@-./ftscript.sh rmlinks
+	#@-./ftscript.sh rmlinks
 
 re: fclean all
 
