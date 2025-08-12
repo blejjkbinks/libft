@@ -6,7 +6,7 @@
 #    By: rdomange <romitdomange@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/24 14:35:21 by rdomange          #+#    #+#              #
-#    Updated: 2025/08/12 21:46:12 by rdomange         ###   ########.fr        #
+#    Updated: 2025/08/12 21:55:52 by rdomange         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,7 @@ RM := rm -rf
 MKD := mkdir -p
 CATS := CHR FUN LIST MEM NBR SPLIT STR WRT
 
-MAKEFLAGS += --no-print-directory -s
+MAKEFLAGS := --no-print-directory $(filter-out --print-directory,$(MAKEFLAGS))
 
 SRC_CHR := \
 	isalnum		isalpha		isalpha_lower		isalpha_upper \
