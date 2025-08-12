@@ -13,7 +13,7 @@ _ftscript_cleandsstore() {
 }
 
 _ftscript_countfiles() {
-  make -C .
+  make --no-print-directory -C .
   [[ $? -ne 0 ]] && echo "No Makefile/compile failed" >&2 && return 1
   if ! norminette -v > /dev/null 2>&1; then
     echo "norminette not installed" >&2
