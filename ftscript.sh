@@ -78,7 +78,21 @@ _ftscript_sourcetxt() {
   echo "ok $srctxt is on your desktop"
 }
 
-local valid_commands=('rmlinks' 'cleandsstore' 'countfiles' 'gitstat' 'gitpush' 'sourcetxt')
+_ftscript_spin() {
+  up='\033[A'
+  cut='\033[K'
+  clear="\n${up}${cut}"
+
+  trap "printf '${clear}done spinning\n'; exit" SIGINT
+  while true; do
+    for c in - \\ \| /; do
+      printf "${clear}%s" "$c"
+      sleep .2
+    done
+  done
+}
+
+local valid_commands=('rmlinks' 'cleandsstore' 'countfiles' 'gitstat' 'gitpush' 'sourcetxt' 'spin')
 local execpath=$(realpath "$_FTSCRIPT_ZERO" 2>/dev/null)
 [[ -z execpath ]] && execpath="$_FTSCRIPT_ZERO" && showdebug "realpath failed"
 [[ "$execpath" != /* ]] && execpath="$PWD/$execpath"

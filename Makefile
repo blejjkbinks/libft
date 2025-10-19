@@ -27,9 +27,13 @@ CC_NOFLG := cc
 AR := ar rcs
 RM := rm -rf
 MKD := mkdir -p
-CATS := CHR FUN LIST MEM NBR SPLIT STR WRT
 
 MAKEFLAGS += --no-print-directory -s
+
+CLEAR := \n\033[A\033[K
+CLEAR_DOUBLE := \n\033[A\033[K\033[A\033[K
+
+CATS := CHR FUN LIST MEM NBR SPLIT STR WRT
 
 SRC_CHR := \
 	isalnum		isalpha		isalpha_lower		isalpha_upper \
@@ -84,15 +88,35 @@ all: $(NAME)
 
 $(OBJ_DIR):
 	@echo "libft making"
+	@echo "---"
 	@$(MKD) $(foreach c, $(CATS), $@/$(call tolower,$(c)))
 
 $(OBJ): $(OBJ_DIR)%.o: $(SRC_DIR)%.c
+	@$(MKD) $(dir $@)
 	@$(CC) -c $< -o $@
-	@printf "%s " $(notdir $@) | sed 's/^ft_//'
+#	@printf "%s " $(notdir $@) | sed 's/^ft_//'
+	@t=$$(echo $(OBJ) | wc -w); \
+	 i=$$(find $(OBJ_DIR) -type f -name '*.o' 2>/dev/null | wc -l); \
+	 p=$$((100 * i / t)); \
+	 spin_sequence='-\|/+'; \
+	 spin_len=$$(( $$(echo "$$spin_sequence" | wc -c) - 1)); \
+	 spin_speed=4; \
+	 spin=$$(echo "$$spin_sequence" | cut -c $$(( (( $$i / $$spin_speed ) % $$spin_len ) + 1 )) ); \
+	 bar_len=16; \
+	 bar_full_count=$$(((p * bar_len) / 100)); \
+	 bar_empty_count=$$((bar_len - bar_full_count)); \
+	 bar_full=$$(printf '#%.0s' $$(seq 1 $$bar_full_count)); \
+	 bar_emtpy=""; \
+	 if [ $$bar_empty_count -gt 0 ]; then \
+	   bar_empty=$$(printf '_%.0s' $$(seq 1 $$bar_empty_count)); fi; \
+	 cat=$(notdir $(patsubst %/,%,$(dir $@))); \
+	 name=$(subst ft_,,$(basename $(notdir $@))); \
+	 printf "$(CLEAR_DOUBLE)[%s][%s%s][%s]\n%10s,%s" \
+	 "$$spin" "$$bar_full" "$$bar_empty" "$$spin" "$$cat" "$$name"
 
 $(NAME): $(OBJ_DIR) $(OBJ)
 	@$(AR) $(NAME) $(OBJ)
-	@echo $(NAME)
+	@echo "$(CLEAR_DOUBLE)$(NAME)"
 
 clean: testclean
 	@$(RM) $(OBJ_DIR)
