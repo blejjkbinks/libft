@@ -104,7 +104,7 @@ $(OBJ): $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	if [ $(PRINT_LEVEL) -eq 2 ]; then \
 		printf "\n\033[A\033[K%3s%% %s" "$$p" ""; \
 	elif [ $(PRINT_LEVEL) -eq 3 ]; then \
-	spin_sequence='-\|/+*'; \
+	spin_sequence='-\|/-+*+'; \
 	spin_len=$$(( $$(echo "$$spin_sequence" | wc -c) - 1)); \
 	spin_speed=4; \
 	spin=$$(echo "$$spin_sequence" | cut -c $$(( (( $$i / $$spin_speed ) % $$spin_len ) + 1 )) ); \
