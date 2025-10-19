@@ -91,18 +91,19 @@ $(OBJ_DIR):
 $(OBJ): $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	@$(MKD) $(dir $@)
 	@$(CC) -c $< -o $@
-	@t=$$(echo $(OBJ) | wc -w); \
+	@if [ $(PRINT_LEVEL) -eq 0 ]; then \
+		:; \
+	elif [ $(PRINT_LEVEL) -eq 1 ]; then \
+		printf "%s " $(notdir $@) | sed 's/^ft_//'; \
+	else \
+	t=$$(echo $(OBJ) | wc -w); \
 	i=$$(find $(OBJ_DIR) -type f -name '*.o' 2>/dev/null | wc -l); \
 	p=$$((100 * i / t)); \
 	cat=$(notdir $(patsubst %/,%,$(dir $@))); \
 	name=$(subst ft_,,$(basename $(notdir $@))); \
-	if [ $(PRINT_LEVEL) -eq 0 ]; then \
-		:; \
-	elif [ $(PRINT_LEVEL) -eq 1 ]; then \
-		printf "%s " $(notdir $@) | sed 's/^ft_//'; \
-	elif [ $(PRINT_LEVEL) -eq 2 ]; then \
+	if [ $(PRINT_LEVEL) -eq 2 ]; then \
 		printf "\n\033[A\033[K%3s%% %s" "$$p" ""; \
-	else \
+	elif [ $(PRINT_LEVEL) -eq 3 ]; then \
 	spin_sequence='-\|/+*'; \
 	spin_len=$$(( $$(echo "$$spin_sequence" | wc -c) - 1)); \
 	spin_speed=4; \
@@ -117,7 +118,7 @@ $(OBJ): $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	if [ $$i -eq 1 ] && [ $(PRINT_LEVEL) -ge 3 ]; then echo '---'; fi; \
 	printf "\n\033[A\033[K\033[A\033[K[%s][%s%s][%s]\n%10s,%s" \
 	"$$spin" "$$bar_full" "$$bar_empty" "$$spin" "$$cat" "$$name"; \
-	fi
+	fi; fi
 
 $(NAME): $(OBJ_DIR) $(OBJ)
 	@$(AR) $(NAME) $(OBJ)
