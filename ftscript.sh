@@ -85,7 +85,7 @@ _ftscript_spin() {
 
   trap "printf '${clear}done spinning\n'; exit" SIGINT
   while true; do
-    for c in - \\ \| /; do
+    for c in - \\ \| / + '*'; do
       printf "${clear}%s" "$c"
       sleep .2
     done
