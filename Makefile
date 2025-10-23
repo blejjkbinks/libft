@@ -6,7 +6,7 @@
 #    By: rdomange <romitdomange@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/24 14:35:21 by rdomange          #+#    #+#              #
-#    Updated: 2025/08/12 21:59:25 by rdomange         ###   ########.fr        #
+#    Updated: 2025/10/23 14:48:06 by rdomange         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,7 @@ RM := rm -rf
 MKD := mkdir -p
 
 MAKEFLAGS += --no-print-directory -s
-PRINT_LEVEL := 3
+PRINT_LEVEL := 2
 
 CATS := CHR FUN LIST MEM NBR SPLIT STR WRT
 
