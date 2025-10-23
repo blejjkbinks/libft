@@ -19,9 +19,9 @@ _ftscript_countfiles() {
     echo "norminette not installed" >&2
   else
     echo "norminette KOs: "
-    norminette . | grep Error! | wc -l >&2
+    norminette .  2>/dev/null | grep Error! | wc -l >&2
     if ! norminette . > /dev/null 2>&1; then
-      norminette -o . | grep Error!
+      norminette -o . 2>/dev/null | grep Error!
     fi
   fi
   if ! tree / -L 1 >/dev/null 2>&1; then
